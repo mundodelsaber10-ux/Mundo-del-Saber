@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="theme-color" content="#0EB882">
+  <title>Storyboard Interactivo</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    body { background: var(--bg); overflow-x: hidden; }
+
+    .hero-bg {
+      position: fixed; inset: 0; z-index: 0;
+      overflow: hidden; pointer-events: none;
+    }
+    .bubble {
+      position: absolute; border-radius: 50%; opacity: .10;
+      animation: float linear infinite;
+    }
+    @keyframes float {
+      0%   { transform: translateY(110vh) scale(1); }
+      100% { transform: translateY(-20vh) scale(1.1); }
+    }
+
+    .page-content {
+      position: relative; z-index: 1;
+      min-height: 100dvh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 32px 20px 40px;
+    }
+
+    .logo-wrap { text-align: center; margin-bottom: 40px; }
+
+    .logo-icon {
+      width: 80px; height: 80px; border-radius: 24px;
+      background: linear-gradient(135deg, var(--heladeria), var(--creativo));
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 16px;
+      box-shadow: 0 8px 24px rgba(14,184,130,.3);
+      font-size: 2.4rem;
+      animation: popIn .6s cubic-bezier(.16,1,.3,1) both;
+    }
+    @keyframes popIn {
+      from { transform: scale(0.5); opacity: 0; }
+      to   { transform: scale(1);   opacity: 1; }
+    }
+
+    .logo-title {
+      font-family: var(--font-display);
+      font-size: 1.7rem; font-weight: 800;
+      color: var(--text); line-height: 1.1;
+    }
+    .logo-sub { font-size: .95rem; color: var(--text-2); margin-top: 4px; }
+
+    .roles-grid {
+      display: flex; flex-direction: column;
+      gap: 14px; width: 100%; max-width: 380px;
+    }
+
+    .role-card {
+      background: var(--surface);
+      border-radius: var(--radius-xl);
+      border: 2.5px solid var(--border);
+      padding: 20px;
+      display: flex; align-items: center; gap: 16px;
+      cursor: pointer;
+      transition: transform .2s cubic-bezier(.16,1,.3,1), box-shadow .2s, border-color .2s;
+      text-align: left;
+    }
+    .role-card:hover  { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+    .role-card:active { transform: translateY(0);    box-shadow: var(--shadow-sm); }
+
+    .role-card.kid {
+      border-color: var(--heladeria-soft);
+      background: linear-gradient(135deg, var(--surface) 60%, var(--heladeria-light));
+    }
+    .role-card.kid:hover { border-color: var(--heladeria); }
+
+    .role-card.parent {
+      border-color: var(--cafe-soft);
+      background: linear-gradient(135deg, var(--surface) 60%, var(--cafe-light));
+    }
+    .role-card.parent:hover { border-color: var(--cafe); }
+
+    .role-card.teacher {
+      border-color: var(--creativo-soft);
+      background: linear-gradient(135deg, var(--surface) 60%, var(--creativo-light));
+    }
+    .role-card.teacher:hover { border-color: var(--creativo); }
+
+    .role-icon {
+      width: 58px; height: 58px; border-radius: 18px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.8rem; flex-shrink: 0;
+    }
+    .role-card.kid     .role-icon { background: var(--heladeria-light); }
+    .role-card.parent  .role-icon { background: var(--cafe-light);      }
+    .role-card.teacher .role-icon { background: var(--creativo-light);  }
+
+    .role-texts { flex: 1; }
+    .role-name {
+      font-family: var(--font-display);
+      font-size: 1.1rem; font-weight: 700; color: var(--text);
+    }
+    .role-card.kid     .role-name { color: var(--heladeria-dark); }
+    .role-card.parent  .role-name { color: var(--cafe-dark);      }
+    .role-card.teacher .role-name { color: var(--creativo-dark);  }
+    .role-desc { font-size: .85rem; color: var(--text-2); margin-top: 2px; }
+    .role-arrow { font-size: 1.2rem; color: var(--text-3); flex-shrink: 0; }
+
+    .page-footer { margin-top: 36px; text-align: center; font-size: .78rem; color: var(--text-3); }
+  </style>
+</head>
+<body>
+
+  <div id="page-loader">
+    <div style="display:flex;gap:8px;">
+      <div class="loader-dot" style="background:var(--heladeria)"></div>
+      <div class="loader-dot" style="background:var(--cafe)"></div>
+      <div class="loader-dot" style="background:var(--creativo)"></div>
+    </div>
+  </div>
+
+  <div class="hero-bg" id="bubbles"></div>
+
+  <div class="page-content">
+    <div class="logo-wrap slide-up">
+      <div class="logo-icon">🌟</div>
+      <p class="logo-title">Storyboard<br>Interactivo</p>
+      <p class="logo-sub">¿Quién eres tú hoy?</p>
+    </div>
+
+    <div class="roles-grid">
+      <button class="role-card kid slide-up delay-1"
+              onclick="window.location.href='pages/login-estudiante.html'">
+        <div class="role-icon">🎒</div>
+        <div class="role-texts">
+          <p class="role-name">¡Soy estudiante!</p>
+          <p class="role-desc">Jugar, aprender y crear cosas geniales</p>
+        </div>
+        <span class="role-arrow">→</span>
+      </button>
+
+      <button class="role-card parent slide-up delay-2"
+              onclick="window.location.href='pages/login-adulto.html?rol=padre'">
+        <div class="role-icon">☕</div>
+        <div class="role-texts">
+          <p class="role-name">Soy papá / mamá</p>
+          <p class="role-desc">Ver el progreso de mi hijo/a en el café</p>
+        </div>
+        <span class="role-arrow">→</span>
+      </button>
+
+      <button class="role-card teacher slide-up delay-3"
+              onclick="window.location.href='pages/login-adulto.html?rol=docente'">
+        <div class="role-icon">📚</div>
+        <div class="role-texts">
+          <p class="role-name">Soy docente / especialista</p>
+          <p class="role-desc">Gestionar grupos y contenido educativo</p>
+        </div>
+        <span class="role-arrow">→</span>
+      </button>
+    </div>
+
+    <p class="page-footer">boarEl Mundo del Saber &nbsp;·&nbsp; Hecho con ❤️ para tu escuela</p>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script>
+    // Burbujas animadas de fondo
+    const colors = ['#0EB882','#E8922A','#7B68EE','#F59E0B','#22C55E'];
+    const container = document.getElementById('bubbles');
+    for (let i = 0; i < 14; i++) {
+      const b = document.createElement('div');
+      b.className = 'bubble';
+      const size = Math.random() * 80 + 30;
+      b.style.cssText = `
+        width:${size}px;height:${size}px;
+        left:${Math.random()*100}%;
+        background:${colors[Math.floor(Math.random()*colors.length)]};
+        animation-duration:${Math.random()*12+8}s;
+        animation-delay:-${Math.random()*12}s;
+      `;
+      container.appendChild(b);
+    }
+
+    // Si ya hay sesión, redirigir
+    (async () => {
+      const kid = getKidSession();
+      if (kid) { window.location.href = 'pages/heladeria.html'; return; }
+      const { data: { session } } = await sb.auth.getSession();
+      if (session) { await redirectByRole(); return; }
+      hideLoader();
+    })();
+  </script>
+</body>
+</html>

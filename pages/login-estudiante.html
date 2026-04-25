@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="theme-color" content="#0EB882">
+  <title>Entrada · Storyboard</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    body { background: var(--heladeria-light); }
+
+    .top-bar {
+      position: sticky; top: 0; z-index: 10;
+      background: var(--heladeria-light);
+      padding: 16px 20px 8px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .back-btn {
+      width: 38px; height: 38px; border-radius: 12px;
+      background: var(--surface); border: 1.5px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; cursor: pointer; flex-shrink: 0;
+      transition: background .15s;
+    }
+    .back-btn:hover { background: var(--heladeria-soft); }
+
+    .page-wrap {
+      padding: 16px 20px 48px;
+      max-width: 420px; margin: 0 auto;
+    }
+
+    /* Tabs nuevo / volver */
+    .tabs {
+      display: flex; gap: 8px;
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      padding: 5px;
+      margin-bottom: 28px;
+      border: 1.5px solid var(--border);
+    }
+    .tab {
+      flex: 1; padding: 10px;
+      border-radius: var(--radius-md);
+      font-size: .9rem; font-weight: 700;
+      transition: background .2s, color .2s;
+      color: var(--text-2);
+    }
+    .tab.active {
+      background: var(--heladeria);
+      color: white;
+      box-shadow: 0 3px 10px rgba(14,184,130,.3);
+    }
+
+    /* Sección de vista */
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* ——— PASO 1: Avatar ——— */
+    .step-title {
+      font-family: var(--font-display);
+      font-size: 1.5rem; font-weight: 800;
+      color: var(--heladeria-dark);
+      margin-bottom: 4px;
+    }
+    .step-sub { font-size: .9rem; color: var(--text-2); margin-bottom: 20px; }
+
+    .avatar-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .avatar-opt {
+      aspect-ratio: 1;
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      border: 2.5px solid var(--border);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 4px; cursor: pointer;
+      transition: border-color .2s, transform .15s, background .2s;
+      font-size: 2rem;
+    }
+    .avatar-opt span.lbl { font-size: .7rem; color: var(--text-2); font-weight: 600; }
+    .avatar-opt:hover  { transform: scale(1.05); border-color: var(--heladeria); }
+    .avatar-opt.sel {
+      border-color: var(--heladeria);
+      background: var(--heladeria-light);
+      transform: scale(1.06);
+      box-shadow: 0 4px 14px rgba(14,184,130,.2);
+    }
+
+    /* ——— PASO 2: Apodo ——— */
+    .field-input.kid {
+      font-size: 1.1rem; text-align: center; font-weight: 700;
+      letter-spacing: .5px;
+    }
+    .field-input.kid:focus { border-color: var(--heladeria); }
+
+    .selected-avatar-preview {
+      font-size: 3rem; text-align: center;
+      margin-bottom: 12px;
+      animation: popIn .3s cubic-bezier(.16,1,.3,1) both;
+    }
+    @keyframes popIn {
+      from { transform: scale(0.6); opacity: 0; }
+      to   { transform: scale(1);   opacity: 1; }
+    }
+
+    /* ——— PASO 3: PIN ——— */
+    .pin-display {
+      display: flex; justify-content: center; gap: 12px;
+      margin: 20px 0;
+    }
+    .pin-cell {
+      width: 52px; height: 62px;
+      border-radius: var(--radius-md);
+      background: var(--surface);
+      border: 2.5px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-display);
+      font-size: 1.8rem; font-weight: 800;
+      color: var(--heladeria-dark);
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .pin-cell.active {
+      border-color: var(--heladeria);
+      box-shadow: 0 0 0 3px rgba(14,184,130,.15);
+    }
+    .pin-cell.filled { background: var(--heladeria-light); }
+
+    .numpad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .num-btn {
+      aspect-ratio: 1.2;
+      border-radius: var(--radius-md);
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      font-size: 1.3rem; font-weight: 700;
+      color: var(--text);
+      transition: background .15s, transform .1s;
+      font-family: var(--font-display);
+    }
+    .num-btn:hover  { background: var(--heladeria-soft); }
+    .num-btn:active { transform: scale(0.94); }
+    .num-btn.del    { font-size: 1rem; color: var(--text-2); }
+
+    /* ——— Vista VOLVER (login niño) ——— */
+    .code-input-wrap {
+      position: relative; margin-bottom: 16px;
+    }
+    .code-big {
+      font-size: 1.4rem; letter-spacing: 4px;
+      text-align: center; text-transform: uppercase;
+      font-weight: 800; font-family: var(--font-display);
+    }
+
+    /* ——— Steps indicator ——— */
+    .steps-ind {
+      display: flex; gap: 6px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .step-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--border); transition: background .2s, width .2s;
+    }
+    .step-dot.done  { background: var(--heladeria-soft); }
+    .step-dot.curr  { background: var(--heladeria); width: 22px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+  <div id="page-loader">
+    <div style="display:flex;gap:8px;">
+      <div class="loader-dot" style="background:var(--heladeria)"></div>
+      <div class="loader-dot" style="background:var(--heladeria)"></div>
+      <div class="loader-dot" style="background:var(--heladeria)"></div>
+    </div>
+  </div>
+
+  <!-- Barra superior -->
+  <div class="top-bar">
+    <button class="back-btn" onclick="goBack()" aria-label="Volver">←</button>
+    <span style="font-family:var(--font-display);font-weight:700;color:var(--heladeria-dark);font-size:1rem">
+      La Heladería
+    </span>
+  </div>
+
+  <div class="page-wrap">
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" id="tab-new"    onclick="switchTab('new')">Soy nuevo 🌱</button>
+      <button class="tab"        id="tab-return" onclick="switchTab('return')">Ya tengo cuenta 🎒</button>
+    </div>
+
+    <!-- ============================
+         VISTA: NUEVO ESTUDIANTE
+         (3 pasos: avatar → apodo → pin)
+         ============================ -->
+    <div class="view active" id="view-new">
+
+      <!-- Paso 1: Elige avatar -->
+      <div id="step1">
+        <p class="step-title">¡Elige tu personaje!</p>
+        <p class="step-sub">Este serás tú dentro del Storyboard</p>
+
+        <div class="avatar-grid" id="avatarGrid"></div>
+
+        <button class="btn btn-primary btn-xl" id="btnStep1" onclick="goStep2()" disabled>
+          ¡Este soy yo! →
+        </button>
+      </div>
+
+      <!-- Paso 2: Pon tu apodo -->
+      <div id="step2" style="display:none">
+        <div class="steps-ind">
+          <div class="step-dot done"></div>
+          <div class="step-dot curr"></div>
+          <div class="step-dot"></div>
+        </div>
+
+        <div class="selected-avatar-preview" id="avatarPreview">🐻</div>
+
+        <p class="step-title">¿Cómo te llamas?</p>
+        <p class="step-sub">Escribe un apodo divertido</p>
+
+        <div class="field-group" style="margin-top:16px">
+          <input class="field-input kid" id="nicknameInput"
+                 type="text" maxlength="20"
+                 placeholder="Ej: Explorador123"
+                 oninput="checkNickname()">
+          <span class="field-error" id="nicknameError">
+            Mínimo 3 letras, sin espacios al inicio
+          </span>
+        </div>
+
+        <div style="display:flex;gap:10px;margin-top:8px">
+          <button class="btn btn-outline" onclick="goStep1()">← Atrás</button>
+          <button class="btn btn-primary" id="btnStep2" onclick="goStep3()" disabled>Siguiente →</button>
+        </div>
+      </div>
+
+      <!-- Paso 3: PIN secreto -->
+      <div id="step3" style="display:none">
+        <div class="steps-ind">
+          <div class="step-dot done"></div>
+          <div class="step-dot done"></div>
+          <div class="step-dot curr"></div>
+        </div>
+
+        <p class="step-title">Tu PIN secreto</p>
+        <p class="step-sub">4 números que solo tú sabes</p>
+
+        <div class="pin-display" id="pinDisplay">
+          <div class="pin-cell active" id="pc0">_</div>
+          <div class="pin-cell" id="pc1">_</div>
+          <div class="pin-cell" id="pc2">_</div>
+          <div class="pin-cell" id="pc3">_</div>
+        </div>
+
+        <div class="numpad" id="numpad"></div>
+
+        <div style="display:flex;gap:10px">
+          <button class="btn btn-outline" onclick="goStep2()">← Atrás</button>
+          <button class="btn btn-primary btn-xl" id="btnStep3"
+                  onclick="registerKid()" disabled>
+            ¡Listo, entrar! 🚀
+          </button>
+        </div>
+
+        <p style="font-size:.8rem;color:var(--text-2);text-align:center;margin-top:16px">
+          🏫 ¿Tienes el código de tu salón? Lo puedes agregar después dentro de la heladería.
+        </p>
+      </div>
+
+    </div><!-- /view-new -->
+
+    <!-- ============================
+         VISTA: YA TENGO CUENTA
+         ============================ -->
+    <div class="view" id="view-return">
+      <p class="step-title">¡Hola de nuevo! 👋</p>
+      <p class="step-sub">Escribe tu apodo para entrar</p>
+
+      <div class="field-group" style="margin-top:20px">
+        <label class="field-label">Tu apodo</label>
+        <input class="field-input kid code-big" id="returnNickname"
+               type="text" maxlength="20" placeholder="MiApodo123"
+               oninput="loadReturnAvatar()">
+      </div>
+
+      <div id="returnAvatarWrap" style="display:none">
+        <div class="selected-avatar-preview" id="returnAvatar">🐻</div>
+        <p style="text-align:center;font-size:.9rem;color:var(--text-2);margin-bottom:16px">
+          ¿Este eres tú? Pon tu PIN para confirmar.
+        </p>
+
+        <div class="pin-display" id="returnPinDisplay">
+          <div class="pin-cell active" id="rpc0">_</div>
+          <div class="pin-cell" id="rpc1">_</div>
+          <div class="pin-cell" id="rpc2">_</div>
+          <div class="pin-cell" id="rpc3">_</div>
+        </div>
+
+        <div class="numpad" id="returnNumpad"></div>
+      </div>
+
+      <div id="returnNotFound" style="display:none;text-align:center;padding:20px 0">
+        <p style="font-size:2rem">🤔</p>
+        <p style="font-weight:700;color:var(--text)">No encontré ese apodo</p>
+        <p class="caption" style="margin-top:4px">¿Quizás tienes uno diferente?</p>
+      </div>
+    </div><!-- /view-return -->
+
+  </div><!-- /page-wrap -->
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase.js"></script>
+  <script>
+    /* ============ ESTADO LOCAL ============ */
+    let selectedAvatar = null;
+    let pinDigits = [];
+    let returnPin = [];
+    let returnKidData = null;
+
+    /* ============ TABS ============ */
+    function switchTab(tab) {
+      document.getElementById('tab-new').classList.toggle('active', tab === 'new');
+      document.getElementById('tab-return').classList.toggle('active', tab === 'return');
+      document.getElementById('view-new').classList.toggle('active', tab === 'new');
+      document.getElementById('view-return').classList.toggle('active', tab === 'return');
+    }
+
+    function goBack() {
+      window.location.href = '../index.html';
+    }
+
+    /* ============ PASO 1 — AVATARES ============ */
+    function buildAvatarGrid() {
+      const grid = document.getElementById('avatarGrid');
+      AVATARS.forEach(av => {
+        const btn = document.createElement('button');
+        btn.className = 'avatar-opt';
+        btn.dataset.id = av.id;
+        btn.innerHTML = `${av.emoji}<span class="lbl">${av.label}</span>`;
+        btn.onclick = () => selectAvatar(av);
+        grid.appendChild(btn);
+      });
+    }
+
+    function selectAvatar(av) {
+      selectedAvatar = av;
+      document.querySelectorAll('.avatar-opt').forEach(b =>
+        b.classList.toggle('sel', b.dataset.id === av.id)
+      );
+      document.getElementById('btnStep1').disabled = false;
+    }
+
+    function goStep1() {
+      document.getElementById('step1').style.display = 'block';
+      document.getElementById('step2').style.display = 'none';
+    }
+
+    function goStep2() {
+      if (!selectedAvatar) return;
+      document.getElementById('step1').style.display = 'none';
+      document.getElementById('step2').style.display = 'block';
+      document.getElementById('avatarPreview').textContent = selectedAvatar.emoji;
+      document.getElementById('nicknameInput').focus();
+    }
+
+    function checkNickname() {
+      const val = document.getElementById('nicknameInput').value.trim();
+      const ok  = val.length >= 3;
+      document.getElementById('btnStep2').disabled = !ok;
+      document.getElementById('nicknameError').classList.toggle('visible', val.length > 0 && !ok);
+    }
+
+    /* ============ PASO 3 — PIN ============ */
+    function buildNumpad(containerId, pinArray, onComplete, prefixId) {
+      const pad = document.getElementById(containerId);
+      pad.innerHTML = '';
+      [1,2,3,4,5,6,7,8,9,'',0,'⌫'].forEach(n => {
+        const btn = document.createElement('button');
+        btn.className = 'num-btn' + (n === '⌫' ? ' del' : '');
+        btn.textContent = n;
+        if (n === '') { btn.disabled = true; btn.style.visibility='hidden'; }
+        btn.onclick = () => {
+          if (n === '⌫') {
+            if (pinArray.length > 0) pinArray.pop();
+          } else if (pinArray.length < 4) {
+            pinArray.push(String(n));
+          }
+          updatePinDisplay(pinArray, prefixId);
+          if (pinArray.length === 4 && onComplete) onComplete();
+        };
+        pad.appendChild(btn);
+      });
+    }
+
+    function updatePinDisplay(arr, prefix) {
+      for (let i = 0; i < 4; i++) {
+        const cell = document.getElementById(`${prefix}${i}`);
+        if (arr[i] !== undefined) {
+          cell.textContent = '●';
+          cell.classList.add('filled');
+        } else {
+          cell.textContent = '_';
+          cell.classList.remove('filled');
+        }
+        cell.classList.toggle('active', i === arr.length);
+      }
+      if (prefix === 'pc') {
+        document.getElementById('btnStep3').disabled = arr.length < 4;
+      }
+    }
+
+    function goStep3() {
+      const nickname = document.getElementById('nicknameInput').value.trim();
+      if (nickname.length < 3) return;
+      pinDigits = [];
+      document.getElementById('step2').style.display = 'none';
+      document.getElementById('step3').style.display = 'block';
+      buildNumpad('numpad', pinDigits, null, 'pc');
+      updatePinDisplay(pinDigits, 'pc');
+    }
+
+    /* ============ REGISTRO NIÑO ============ */
+    async function registerKid() {
+      if (pinDigits.length < 4) return;
+      const btn = document.getElementById('btnStep3');
+      setButtonLoading(btn, true);
+
+      const nickname = document.getElementById('nicknameInput').value.trim();
+      const pin      = pinDigits.join('');
+
+      // Verificar que el apodo no esté tomado
+      const { data: existing } = await sb
+        .from('students')
+        .select('id')
+        .eq('nickname', nickname)
+        .maybeSingle();
+
+      if (existing) {
+        showToast('¡Ese apodo ya existe! Elige otro 😅', 'error');
+        setButtonLoading(btn, false);
+        return;
+      }
+
+      // Crear estudiante en Supabase
+      const { data, error } = await sb
+        .from('students')
+        .insert({
+          nickname,
+          avatar_id:  selectedAvatar.id,
+          avatar_emoji: selectedAvatar.emoji,
+          pin_hash:   btoa(pin),   // simple encode (ver nota seguridad)
+          points:     0,
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error(error);
+        showToast('Hubo un error, intenta de nuevo 🙁', 'error');
+        setButtonLoading(btn, false);
+        return;
+      }
+
+      // Guardar sesión local y redirigir
+      saveKidSession({
+        id:           data.id,
+        nickname:     data.nickname,
+        avatar_id:    data.avatar_id,
+        avatar_emoji: data.avatar_emoji,
+        points:       0,
+      });
+
+      showToast(`¡Bienvenido, ${nickname}! 🎉`, 'success');
+      setTimeout(() => window.location.href = 'heladeria.html', 800);
+    }
+
+    /* ============ LOGIN NIÑO (volver) ============ */
+    let nickSearchTimeout;
+
+    async function loadReturnAvatar() {
+      clearTimeout(nickSearchTimeout);
+      const nick = document.getElementById('returnNickname').value.trim();
+      document.getElementById('returnAvatarWrap').style.display = 'none';
+      document.getElementById('returnNotFound').style.display = 'none';
+      returnPin = [];
+      returnKidData = null;
+
+      if (nick.length < 3) return;
+
+      nickSearchTimeout = setTimeout(async () => {
+        const { data } = await sb
+          .from('students')
+          .select('id, nickname, avatar_id, avatar_emoji, points')
+          .eq('nickname', nick)
+          .maybeSingle();
+
+        if (!data) {
+          document.getElementById('returnNotFound').style.display = 'block';
+          return;
+        }
+
+        returnKidData = data;
+        document.getElementById('returnAvatar').textContent = data.avatar_emoji;
+        document.getElementById('returnAvatarWrap').style.display = 'block';
+        buildNumpad('returnNumpad', returnPin, verifyReturnPin, 'rpc');
+        updatePinDisplay(returnPin, 'rpc');
+      }, 500);
+    }
+
+    async function verifyReturnPin() {
+      if (!returnKidData || returnPin.length < 4) return;
+      const pin = returnPin.join('');
+
+      const { data } = await sb
+        .from('students')
+        .select('pin_hash')
+        .eq('id', returnKidData.id)
+        .single();
+
+      if (!data || data.pin_hash !== btoa(pin)) {
+        showToast('PIN incorrecto, intenta de nuevo 🔐', 'error');
+        returnPin = [];
+        updatePinDisplay(returnPin, 'rpc');
+        return;
+      }
+
+      saveKidSession(returnKidData);
+      showToast(`¡Hola de nuevo, ${returnKidData.nickname}! 👋`, 'success');
+      setTimeout(() => window.location.href = 'heladeria.html', 700);
+    }
+
+    /* ============ INIT ============ */
+    buildAvatarGrid();
+
+    // Si ya hay sesión, redirigir
+    (async () => {
+      const kid = getKidSession();
+      if (kid) { window.location.href = 'heladeria.html'; return; }
+      hideLoader();
+    })();
+  </script>
+</body>
+</html>

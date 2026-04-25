@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="theme-color" content="#E8922A">
+  <title>Acceso Adultos · Storyboard</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    body { background: var(--cafe-light); }
+    .top-bar {
+      position: sticky; top: 0; z-index: 10;
+      background: var(--cafe-light);
+      padding: 16px 20px 8px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .back-btn {
+      width: 38px; height: 38px; border-radius: 12px;
+      background: var(--surface); border: 1.5px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; cursor: pointer; transition: background .15s;
+    }
+    .back-btn:hover { background: var(--cafe-soft); }
+    .page-wrap { padding: 16px 20px 48px; max-width: 420px; margin: 0 auto; }
+    .zone-header { text-align: center; margin-bottom: 28px; }
+    .zone-icon {
+      width: 68px; height: 68px; border-radius: 20px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem; margin: 0 auto 12px;
+    }
+    .zone-icon.cafe    { background: var(--cafe-soft); }
+    .zone-icon.creativo{ background: var(--creativo-soft); }
+    .zone-title { font-family: var(--font-display); font-size: 1.6rem; font-weight: 800; }
+    .cafe-title    { color: var(--cafe-dark); }
+    .creativo-title{ color: var(--creativo-dark); }
+    .zone-sub { font-size: .9rem; color: var(--text-2); margin-top: 4px; }
+    .tabs {
+      display: flex; gap: 8px; background: var(--surface);
+      border-radius: var(--radius-lg); padding: 5px;
+      margin-bottom: 24px; border: 1.5px solid var(--border);
+    }
+    .tab { flex: 1; padding: 10px; border-radius: var(--radius-md); font-size: .9rem; font-weight: 700; transition: background .2s, color .2s; color: var(--text-2); }
+    body.rol-padre  .tab.active { background: var(--cafe);    color: white; box-shadow: 0 3px 10px rgba(232,146,42,.3); }
+    body.rol-docente .tab.active{ background: var(--creativo); color: white; box-shadow: 0 3px 10px rgba(123,104,238,.3); }
+    .view { display: none; }
+    .view.active { display: block; }
+    .subrole-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+    .subrole-btn {
+      padding: 12px 10px; border-radius: var(--radius-md); background: var(--surface);
+      border: 2px solid var(--border); font-size: .85rem; font-weight: 700;
+      color: var(--text-2); cursor: pointer; transition: border-color .2s, color .2s, background .2s; text-align: center;
+    }
+    .subrole-btn span { display: block; font-size: 1.4rem; margin-bottom: 4px; }
+    body.rol-padre  .subrole-btn.sel { border-color: var(--cafe);    color: var(--cafe-dark);    background: var(--cafe-light); }
+    body.rol-docente .subrole-btn.sel{ border-color: var(--creativo); color: var(--creativo-dark); background: var(--creativo-light); }
+    .pwd-wrap { position: relative; }
+    .pwd-toggle { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-3); cursor: pointer; font-size: 1rem; padding: 4px; }
+    body.rol-padre  .field-input:focus { border-color: var(--cafe);    box-shadow: 0 0 0 3px rgba(232,146,42,.12); }
+    body.rol-docente .field-input:focus{ border-color: var(--creativo); box-shadow: 0 0 0 3px rgba(123,104,238,.12); }
+    body.rol-padre  .btn-zone { background: var(--cafe);    color: white; box-shadow: 0 4px 14px rgba(232,146,42,.35); }
+    body.rol-docente .btn-zone{ background: var(--creativo); color: white; box-shadow: 0 4px 14px rgba(123,104,238,.35); }
+    #codigoWrap { display: none; }
+    body.rol-docente #codigoWrap { display: block; }
+    .forgot-link { text-align: center; font-size: .85rem; color: var(--text-2); margin-top: 12px; cursor: pointer; text-decoration: underline; }
+    .info-box { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius-md); padding: 14px 16px; font-size: .85rem; color: var(--text-2); margin-top: 20px; display: flex; gap: 10px; align-items: flex-start; }
+    .info-box .ico { font-size: 1.2rem; flex-shrink: 0; }
+  </style>
+</head>
+<body>
+  <div id="page-loader">
+    <div style="display:flex;gap:8px;">
+      <div class="loader-dot" style="background:var(--cafe)"></div>
+      <div class="loader-dot" style="background:var(--cafe)"></div>
+      <div class="loader-dot" style="background:var(--cafe)"></div>
+    </div>
+  </div>
+
+  <div class="top-bar">
+    <button class="back-btn" onclick="window.location.href='../index.html'">←</button>
+    <span id="topBarLabel" style="font-family:var(--font-display);font-weight:700;font-size:1rem"></span>
+  </div>
+
+  <div class="page-wrap">
+    <div class="zone-header slide-up">
+      <div class="zone-icon" id="zoneIcon"></div>
+      <p class="zone-title" id="zoneTitle"></p>
+      <p class="zone-sub"   id="zoneSub"></p>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" id="tab-login" onclick="switchTab('login')">Iniciar sesión</button>
+      <button class="tab"        id="tab-reg"   onclick="switchTab('reg')">Crear cuenta</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div class="view active" id="view-login">
+      <div class="field-group">
+        <label class="field-label">Correo electrónico</label>
+        <input class="field-input" id="loginEmail" type="email" placeholder="tu@correo.com" autocomplete="email">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Contraseña</label>
+        <div class="pwd-wrap">
+          <input class="field-input" id="loginPwd" type="password" placeholder="Tu contraseña" autocomplete="current-password" style="padding-right:44px">
+          <button class="pwd-toggle" onclick="togglePwd('loginPwd',this)">👁</button>
+        </div>
+      </div>
+      <button class="btn btn-zone btn-xl" id="btnLogin" onclick="handleLogin()">Entrar →</button>
+      <p class="forgot-link" onclick="handleForgot()">¿Olvidaste tu contraseña?</p>
+    </div>
+
+    <!-- REGISTRO -->
+    <div class="view" id="view-reg">
+      <p class="field-label" style="margin-bottom:10px">Soy...</p>
+      <div class="subrole-grid" id="subroleGrid"></div>
+      <div class="field-group">
+        <label class="field-label">Nombre completo</label>
+        <input class="field-input" id="regName" type="text" placeholder="Tu nombre" autocomplete="name">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Correo electrónico</label>
+        <input class="field-input" id="regEmail" type="email" placeholder="tu@correo.com" autocomplete="email">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Contraseña</label>
+        <div class="pwd-wrap">
+          <input class="field-input" id="regPwd" type="password" placeholder="Mínimo 6 caracteres" autocomplete="new-password" style="padding-right:44px">
+          <button class="pwd-toggle" onclick="togglePwd('regPwd',this)">👁</button>
+        </div>
+      </div>
+      <div id="codigoWrap">
+        <div class="field-group">
+          <label class="field-label">Código institucional</label>
+          <input class="field-input" id="regCodigo" type="text" placeholder="Ej: ESCUELA2024" autocomplete="off" style="text-transform:uppercase;letter-spacing:2px">
+          <span class="field-error" id="codigoError">Código incorrecto</span>
+        </div>
+      </div>
+      <button class="btn btn-zone btn-xl" id="btnReg" onclick="handleRegister()">Crear mi cuenta →</button>
+      <div class="info-box">
+        <span class="ico">ℹ️</span>
+        <span id="infoBoxText"></span>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase.js"></script>
+  <script>
+    const CODIGO_INSTITUCIONAL = 'STORYBOARD2024';
+    const params = new URLSearchParams(location.search);
+    const rol    = params.get('rol') || 'padre';
+
+    const SUBROLES = {
+      padre:   [{id:'parent',   emoji:'👨‍👩‍👧', label:'Papá / Mamá'},{id:'relative', emoji:'👴', label:'Familiar'}],
+      docente: [{id:'teacher',  emoji:'🏫', label:'Docente titular'},{id:'specialist',emoji:'🎨', label:'Especialista'}],
+    };
+
+    let selectedSubrole = null;
+
+    function initPage() {
+      document.body.classList.add(`rol-${rol}`);
+      if (rol === 'padre') {
+        document.getElementById('topBarLabel').textContent = 'El Café';
+        document.getElementById('zoneIcon').innerHTML = '☕';
+        document.getElementById('zoneIcon').classList.add('cafe');
+        document.getElementById('zoneTitle').textContent = 'El Café';
+        document.getElementById('zoneTitle').classList.add('cafe-title');
+        document.getElementById('zoneSub').textContent = 'Acceso para familias';
+        document.getElementById('infoBoxText').textContent = 'Al crear tu cuenta podrás ver el progreso de tu hijo/a, recibir notificaciones y participar en la comunidad de familias.';
+      } else {
+        document.getElementById('topBarLabel').textContent = 'Docentes';
+        document.getElementById('zoneIcon').innerHTML = '📚';
+        document.getElementById('zoneIcon').classList.add('creativo');
+        document.getElementById('zoneTitle').textContent = 'Acceso docente';
+        document.getElementById('zoneTitle').classList.add('creativo-title');
+        document.getElementById('zoneSub').textContent = 'Gestiona tu aula y contenido';
+        document.getElementById('infoBoxText').textContent = 'Necesitas el código institucional que te proporcionó la dirección de la escuela para registrarte como docente o especialista.';
+      }
+      const grid = document.getElementById('subroleGrid');
+      SUBROLES[rol].forEach(sr => {
+        const btn = document.createElement('button');
+        btn.className = 'subrole-btn';
+        btn.dataset.id = sr.id;
+        btn.innerHTML = `<span>${sr.emoji}</span>${sr.label}`;
+        btn.onclick = () => {
+          selectedSubrole = sr.id;
+          document.querySelectorAll('.subrole-btn').forEach(b => b.classList.toggle('sel', b.dataset.id === sr.id));
+        };
+        grid.appendChild(btn);
+      });
+      selectedSubrole = SUBROLES[rol][0].id;
+      grid.querySelector('.subrole-btn').classList.add('sel');
+    }
+
+    function switchTab(tab) {
+      document.getElementById('tab-login').classList.toggle('active', tab==='login');
+      document.getElementById('tab-reg').classList.toggle('active', tab==='reg');
+      document.getElementById('view-login').classList.toggle('active', tab==='login');
+      document.getElementById('view-reg').classList.toggle('active', tab==='reg');
+    }
+
+    function togglePwd(id, btn) {
+      const inp = document.getElementById(id);
+      const show = inp.type === 'password';
+      inp.type = show ? 'text' : 'password';
+      btn.textContent = show ? '🙈' : '👁';
+    }
+
+    async function handleLogin() {
+      const email = document.getElementById('loginEmail').value.trim();
+      const pwd   = document.getElementById('loginPwd').value;
+      if (!email || !pwd) { showToast('Completa todos los campos','error'); return; }
+      const btn = document.getElementById('btnLogin');
+      setButtonLoading(btn, true);
+      const { error } = await sb.auth.signInWithPassword({ email, password: pwd });
+      if (error) { showToast('Correo o contraseña incorrectos','error'); setButtonLoading(btn,false); return; }
+      await redirectByRole();
+    }
+
+    async function handleRegister() {
+      const name  = document.getElementById('regName').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
+      const pwd   = document.getElementById('regPwd').value;
+      if (!name||!email||!pwd) { showToast('Completa todos los campos','error'); return; }
+      if (pwd.length < 6) { showToast('La contraseña debe tener al menos 6 caracteres','error'); return; }
+      if (rol === 'docente') {
+        const codigo = document.getElementById('regCodigo').value.trim().toUpperCase();
+        if (codigo !== CODIGO_INSTITUCIONAL) {
+          document.getElementById('codigoError').classList.add('visible');
+          showToast('Código institucional incorrecto','error'); return;
+        }
+        document.getElementById('codigoError').classList.remove('visible');
+      }
+      const btn = document.getElementById('btnReg');
+      setButtonLoading(btn, true);
+      const { data, error } = await sb.auth.signUp({ email, password: pwd, options: { data: { full_name: name, role: selectedSubrole } } });
+      if (error) { showToast(error.message,'error'); setButtonLoading(btn,false); return; }
+      if (data.user) {
+        await sb.from('profiles').insert({ id: data.user.id, full_name: name, role: selectedSubrole, email });
+      }
+      showToast('¡Cuenta creada! Revisa tu correo para confirmarla 📧','success',5000);
+      setTimeout(() => switchTab('login'), 2000);
+      setButtonLoading(btn, false);
+    }
+
+    async function handleForgot() {
+      const email = document.getElementById('loginEmail').value.trim();
+      if (!email) { showToast('Escribe tu correo arriba primero','info'); return; }
+      await sb.auth.resetPasswordForEmail(email);
+      showToast('Te enviamos un enlace de recuperación 📧','success');
+    }
+
+    initPage();
+    (async () => {
+      const { data: { session } } = await sb.auth.getSession();
+      if (session) { await redirectByRole(); return; }
+      hideLoader();
+    })();
+  </script>
+</body>
+</html>

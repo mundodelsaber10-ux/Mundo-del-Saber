@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="theme-color" content="#0f0a2e">
+  <title>Entrar — Mi Mundo</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/login-nino.css">
+</head>
+<body>
+
+  <main class="pagina pagina-nino">
+
+    <!-- Botón volver -->
+    <button class="btn-volver" onclick="volver()" aria-label="Volver">
+      <span aria-hidden="true">←</span> Volver
+    </button>
+
+    <!-- Encabezado -->
+    <header class="nino-header animar-entrada">
+      <span class="nino-emoji" role="img" aria-label="Helado">🍦</span>
+      <h1 class="nino-titulo">¡Hola, aventurero!</h1>
+      <p class="text-muted text-sm text-center">Elige cómo quieres entrar</p>
+    </header>
+
+    <!-- Pestañas: Entrar / Registrarse -->
+    <div class="tabs animar-entrada" role="tablist" aria-label="Modo de acceso">
+      <button
+        id="tab-entrar"
+        class="tab activo"
+        role="tab"
+        aria-selected="true"
+        aria-controls="panel-entrar"
+        onclick="cambiarTab('entrar')"
+      >Ya tengo cuenta</button>
+      <button
+        id="tab-registro"
+        class="tab"
+        role="tab"
+        aria-selected="false"
+        aria-controls="panel-registro"
+        onclick="cambiarTab('registro')"
+      >Soy nuevo aquí</button>
+    </div>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- PANEL: ENTRAR                                  -->
+    <!-- ══════════════════════════════════════════════ -->
+    <section id="panel-entrar" class="panel animar-entrada" role="tabpanel" aria-labelledby="tab-entrar">
+
+      <div class="campo-grupo">
+        <label class="campo-label" for="login-apodo">Tu apodo</label>
+        <input
+          id="login-apodo"
+          class="input input-grande"
+          type="text"
+          placeholder="¿Cómo te llaman?"
+          autocomplete="nickname"
+          autocapitalize="none"
+          spellcheck="false"
+          maxlength="20"
+        >
+      </div>
+
+      <div class="campo-grupo">
+        <label class="campo-label" for="login-salon">Código de tu salón</label>
+        <input
+          id="login-salon"
+          class="input input-grande input-codigo"
+          type="text"
+          placeholder="Ej: HELADO7"
+          autocomplete="off"
+          autocapitalize="characters"
+          maxlength="8"
+        >
+      </div>
+
+      <div class="campo-grupo">
+        <label class="campo-label">Tu PIN secreto</label>
+        <div class="pin-zona" role="group" aria-label="Ingresa tu PIN de 4 dígitos">
+          <div class="pin-display" id="pin-display">
+            <span class="pin-circulo" data-pos="0"></span>
+            <span class="pin-circulo" data-pos="1"></span>
+            <span class="pin-circulo" data-pos="2"></span>
+            <span class="pin-circulo" data-pos="3"></span>
+          </div>
+          <div class="teclado-numerico" id="teclado-login">
+            <!-- Generado por JS -->
+          </div>
+        </div>
+      </div>
+
+      <button
+        id="btn-login"
+        class="btn btn-primario btn-bloque"
+        onclick="iniciarSesionNino()"
+        disabled
+      >
+        ¡Entrar a jugar! 🚀
+      </button>
+
+    </section>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- PANEL: REGISTRO                                -->
+    <!-- ══════════════════════════════════════════════ -->
+    <section id="panel-registro" class="panel oculto" role="tabpanel" aria-labelledby="tab-registro">
+
+      <!-- Paso 1: Elige avatar -->
+      <div id="paso-avatar" class="paso activo">
+        <p class="paso-titulo">Elige tu personaje</p>
+        <div class="avatares-grid" id="avatares-grid" role="radiogroup" aria-label="Selecciona un avatar">
+          <!-- Generado por JS -->
+        </div>
+        <button class="btn btn-primario btn-bloque" onclick="irPaso('nombre')">
+          Siguiente →
+        </button>
+      </div>
+
+      <!-- Paso 2: Nombre y salón -->
+      <div id="paso-nombre" class="paso oculto">
+        <p class="paso-titulo">¿Cómo te llamas?</p>
+
+        <div class="campo-grupo">
+          <label class="campo-label" for="reg-apodo">Tu apodo en el juego</label>
+          <input
+            id="reg-apodo"
+            class="input input-grande"
+            type="text"
+            placeholder="Ej: SuperExplorador"
+            autocapitalize="none"
+            maxlength="20"
+          >
+          <span class="campo-ayuda">Solo tú y tu maestra lo verán</span>
+        </div>
+
+        <div class="campo-grupo">
+          <label class="campo-label" for="reg-salon">Código de tu salón</label>
+          <input
+            id="reg-salon"
+            class="input input-grande input-codigo"
+            type="text"
+            placeholder="Tu maestra te lo da"
+            autocapitalize="characters"
+            maxlength="8"
+          >
+        </div>
+
+        <div class="paso-botones">
+          <button class="btn btn-secundario" onclick="irPaso('avatar')">← Atrás</button>
+          <button class="btn btn-primario" onclick="irPaso('pin')">Siguiente →</button>
+        </div>
+      </div>
+
+      <!-- Paso 3: Crear PIN -->
+      <div id="paso-pin" class="paso oculto">
+        <p class="paso-titulo">Crea tu PIN secreto</p>
+        <p class="text-muted text-sm text-center" style="margin-bottom:20px">
+          4 números que solo tú sabes 🤫
+        </p>
+
+        <div class="pin-zona" role="group" aria-label="Crea tu PIN de 4 dígitos">
+          <div class="pin-display" id="pin-display-reg">
+            <span class="pin-circulo" data-pos="0"></span>
+            <span class="pin-circulo" data-pos="1"></span>
+            <span class="pin-circulo" data-pos="2"></span>
+            <span class="pin-circulo" data-pos="3"></span>
+          </div>
+          <div class="teclado-numerico" id="teclado-reg"></div>
+        </div>
+
+        <div class="paso-botones" style="margin-top:16px">
+          <button class="btn btn-secundario" onclick="irPaso('nombre')">← Atrás</button>
+        </div>
+      </div>
+
+      <!-- Paso 4: Confirmación -->
+      <div id="paso-confirmar" class="paso oculto">
+        <div class="confirmar-zona">
+          <span class="confirmar-avatar" id="confirmar-avatar">🐻</span>
+          <p class="confirmar-apodo" id="confirmar-apodo">Explorador</p>
+          <p class="text-muted text-sm">Salón: <strong id="confirmar-salon">—</strong></p>
+        </div>
+
+        <p class="texto-warning">
+          ⚠️ Recuerda tu PIN — si lo olvidas, tu maestra puede ayudarte
+        </p>
+
+        <button
+          id="btn-registrar"
+          class="btn btn-primario btn-bloque"
+          onclick="registrarEstudiante()"
+        >
+          ¡Crear mi cuenta! 🎉
+        </button>
+      </div>
+
+    </section>
+
+  </main>
+
+  <script src="../js/utils.js"></script>
+  <script type="module">
+    import {
+      loginEstudiante,
+      registrarEstudiante as registrarEnDB,
+      getUsuario,
+    } from '../js/modules/supabase.js';
+
+    // ── ESTADO ────────────────────────────────────────────
+    const estado = {
+      pinLogin:   '',
+      pinReg:     '',
+      avatarSel:  '🐻',
+      paso:       'avatar',
+    };
+
+    const AVATARES = ['🐻','🦊','🐸','🦁','🐧','🐙','🦄','🐯','🐨','🐼','🦋','🐬'];
+
+    // ── REDIRIGIR SI YA HAY SESIÓN ────────────────────────
+    getUsuario().then(u => {
+      if (u) irA('heladeria.html');
+    });
+
+    // ── TABS ──────────────────────────────────────────────
+    window.cambiarTab = function(tab) {
+      document.getElementById('panel-entrar').classList.toggle('oculto', tab !== 'entrar');
+      document.getElementById('panel-registro').classList.toggle('oculto', tab !== 'registro');
+      document.getElementById('tab-entrar').classList.toggle('activo', tab === 'entrar');
+      document.getElementById('tab-registro').classList.toggle('activo', tab === 'registro');
+      document.getElementById('tab-entrar').setAttribute('aria-selected', tab === 'entrar');
+      document.getElementById('tab-registro').setAttribute('aria-selected', tab === 'registro');
+    };
+
+    // ── PASOS DE REGISTRO ─────────────────────────────────
+    window.irPaso = function(nuevo) {
+      // Validaciones antes de avanzar
+      if (nuevo === 'pin') {
+        const apodo  = document.getElementById('reg-apodo').value.trim();
+        const salon  = document.getElementById('reg-salon').value.trim();
+        if (!apodo)  { toast('Escribe un apodo', 'error'); return; }
+        if (apodo.length < 3) { toast('El apodo debe tener al menos 3 letras', 'error'); return; }
+        if (!salon)  { toast('Ingresa el código del salón', 'error'); return; }
+      }
+      if (nuevo === 'confirmar') {
+        // Llegar aquí solo desde PIN completo — ver lógica de teclado
+      }
+      document.querySelectorAll('.paso').forEach(p => p.classList.add('oculto'));
+      document.getElementById(`paso-${nuevo}`).classList.remove('oculto');
+      estado.paso = nuevo;
+
+      if (nuevo === 'confirmar') rellenarConfirmacion();
+    };
+
+    function rellenarConfirmacion() {
+      document.getElementById('confirmar-avatar').textContent = estado.avatarSel;
+      document.getElementById('confirmar-apodo').textContent  = document.getElementById('reg-apodo').value.trim();
+      document.getElementById('confirmar-salon').textContent  = document.getElementById('reg-salon').value.trim().toUpperCase();
+    }
+
+    // ── AVATAR GRID ───────────────────────────────────────
+    const gridAvatares = document.getElementById('avatares-grid');
+    AVATARES.forEach(emoji => {
+      const btn = document.createElement('button');
+      btn.className = `avatar-btn ${emoji === '🐻' ? 'seleccionado' : ''}`;
+      btn.textContent = emoji;
+      btn.setAttribute('role', 'radio');
+      btn.setAttribute('aria-checked', emoji === '🐻' ? 'true' : 'false');
+      btn.setAttribute('aria-label', emoji);
+      btn.onclick = () => {
+        document.querySelectorAll('.avatar-btn').forEach(b => {
+          b.classList.remove('seleccionado');
+          b.setAttribute('aria-checked', 'false');
+        });
+        btn.classList.add('seleccionado');
+        btn.setAttribute('aria-checked', 'true');
+        estado.avatarSel = emoji;
+        vibrar([8]);
+      };
+      gridAvatares.appendChild(btn);
+    });
+
+    // ── TECLADO NUMÉRICO ──────────────────────────────────
+    function crearTeclado(contenedorId, displayId, pinKey, onCompleto) {
+      const contenedor = document.getElementById(contenedorId);
+      const display    = document.getElementById(displayId);
+      const teclas     = [1,2,3,4,5,6,7,8,9,'⌫',0,'✓'];
+
+      contenedor.innerHTML = '';
+      teclas.forEach(t => {
+        const btn = document.createElement('button');
+        btn.className = `tecla ${t === '⌫' ? 'tecla-borrar' : ''} ${t === '✓' ? 'tecla-ok' : ''}`;
+        btn.textContent = t;
+        btn.setAttribute('aria-label', t === '⌫' ? 'Borrar' : t === '✓' ? 'Confirmar' : `Dígito ${t}`);
+        btn.onclick = () => pulsarTecla(t, pinKey, display, onCompleto);
+        contenedor.appendChild(btn);
+      });
+    }
+
+    function pulsarTecla(tecla, pinKey, display, onCompleto) {
+      vibrar([6]);
+      let pin = estado[pinKey];
+
+      if (tecla === '⌫') {
+        estado[pinKey] = pin.slice(0, -1);
+      } else if (tecla === '✓') {
+        if (pin.length === 4) onCompleto(pin);
+        return;
+      } else if (pin.length < 4) {
+        estado[pinKey] = pin + tecla;
+      }
+
+      actualizarDisplayPin(display, estado[pinKey]);
+      if (pinKey === 'pinLogin') {
+        document.getElementById('btn-login').disabled = (estado.pinLogin.length !== 4) ||
+          !document.getElementById('login-apodo').value.trim() ||
+          !document.getElementById('login-salon').value.trim();
+      }
+    }
+
+    function actualizarDisplayPin(display, pin) {
+      display.querySelectorAll('.pin-circulo').forEach((c, i) => {
+        c.classList.toggle('lleno', i < pin.length);
+        c.setAttribute('aria-label', i < pin.length ? 'Dígito ingresado' : 'Vacío');
+      });
+    }
+
+    // Crear ambos teclados
+    crearTeclado('teclado-login', 'pin-display', 'pinLogin', () => {});
+    crearTeclado('teclado-reg', 'pin-display-reg', 'pinReg', (pin) => {
+      if (pin.length === 4) irPaso('confirmar');
+    });
+
+    // Habilitar botón login cuando todos los campos están llenos
+    ['login-apodo', 'login-salon'].forEach(id => {
+      document.getElementById(id).addEventListener('input', () => {
+        const apodo = document.getElementById('login-apodo').value.trim();
+        const salon = document.getElementById('login-salon').value.trim();
+        document.getElementById('btn-login').disabled = !(apodo && salon && estado.pinLogin.length === 4);
+      });
+    });
+
+    // Código de salón: solo mayúsculas
+    ['login-salon', 'reg-salon'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('input', () => {
+        el.value = el.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+      });
+    });
+
+    // ── LOGIN ESTUDIANTE ──────────────────────────────────
+    window.iniciarSesionNino = async function() {
+      const apodo = document.getElementById('login-apodo').value.trim();
+      const salon = document.getElementById('login-salon').value.trim().toUpperCase();
+      const pin   = estado.pinLogin;
+
+      if (!apodo || !salon || pin.length !== 4) {
+        toast('Completa todos los campos', 'error');
+        return;
+      }
+
+      mostrarLoader('Entrando...');
+      const { data, error } = await loginEstudiante(apodo, pin, salon);
+      ocultarLoader();
+
+      if (error) {
+        toast('Apodo, salón o PIN incorrectos 😕', 'error');
+        estado.pinLogin = '';
+        actualizarDisplayPin(document.getElementById('pin-display'), '');
+        return;
+      }
+
+      toast('¡Bienvenido de vuelta! 🎉', 'ok');
+      setTimeout(() => irA('heladeria.html'), 800);
+    };
+
+    // ── REGISTRO ESTUDIANTE ───────────────────────────────
+    window.registrarEstudiante = async function() {
+      const apodo  = document.getElementById('reg-apodo').value.trim();
+      const salon  = document.getElementById('reg-salon').value.trim().toUpperCase();
+      const pin    = estado.pinReg;
+      const avatar = estado.avatarSel;
+
+      if (!apodo || !salon || pin.length !== 4) {
+        toast('Falta información', 'error');
+        return;
+      }
+
+      const btn = document.getElementById('btn-registrar');
+      btn.disabled = true;
+      btn.textContent = 'Creando cuenta...';
+
+      mostrarLoader('Creando tu cuenta ✨');
+      const { data, error } = await registrarEnDB({ apodo, pin, avatar, codigoSalon: salon });
+      ocultarLoader();
+
+      if (error) {
+        if (error.message?.includes('already registered')) {
+          toast('Ese apodo ya existe en este salón — elige otro', 'error', 4000);
+        } else {
+          toast('Error al crear la cuenta: ' + error.message, 'error', 5000);
+        }
+        btn.disabled = false;
+        btn.textContent = '¡Crear mi cuenta! 🎉';
+        return;
+      }
+
+      toast('¡Cuenta creada! Bienvenido 🎊', 'ok');
+      setTimeout(() => irA('heladeria.html'), 1000);
+    };
+
+  </script>
+</body>
+</html>

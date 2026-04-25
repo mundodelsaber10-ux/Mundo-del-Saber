@@ -1,0 +1,191 @@
+/* ── LOGIN ADULTO ────────────────────────────────────────── */
+
+.pagina-adulto {
+  gap: 20px;
+  padding-top: 20px;
+  background: var(--bg);
+}
+
+.btn-volver-adulto {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-family: var(--font-body);
+  padding: 8px 4px;
+  transition: color var(--t-fast);
+  align-self: flex-start;
+}
+.btn-volver-adulto:hover { color: var(--text); }
+
+/* Header */
+.adulto-header {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.adulto-emoji {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.adulto-titulo {
+  font-family: var(--font-display);
+  font-size: 1.9rem;
+  font-weight: 800;
+}
+
+/* Tabs adulto */
+.tabs-adulto {
+  display: flex;
+  border-bottom: 1.5px solid var(--border);
+  gap: 0;
+}
+
+.tab-adulto {
+  flex: 1;
+  padding: 12px 8px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  border-bottom: 2.5px solid transparent;
+  margin-bottom: -1.5px;
+  transition: color var(--t-fast), border-color var(--t-fast);
+}
+
+.tab-adulto.activo {
+  color: var(--text);
+  border-bottom-color: var(--color-cafe);
+}
+
+/* Panel adulto */
+.panel-adulto {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 8px;
+}
+
+.panel-adulto.oculto { display: none; }
+
+/* Campos */
+.campo-adulto {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.lbl-adulto {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.input-adulto {
+  padding: 14px 16px;
+  font-size: 1rem;
+  border-radius: var(--r-md);
+}
+
+.input-codigo {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  letter-spacing: 0.12em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.campo-ayuda-adulto {
+  font-size: 0.75rem;
+  color: var(--text-faint);
+}
+
+/* Input password con toggle */
+.input-pass-wrap {
+  position: relative;
+}
+
+.input-pass-wrap .input-adulto {
+  width: 100%;
+  padding-right: 48px;
+}
+
+.toggle-pass {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1rem;
+  color: var(--text-faint);
+  transition: color var(--t-fast);
+  padding: 4px;
+}
+.toggle-pass:hover { color: var(--text-muted); }
+
+/* Barra de fortaleza */
+.strength-bar {
+  height: 4px;
+  background: var(--border);
+  border-radius: var(--r-full);
+  overflow: hidden;
+}
+
+.strength-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: var(--r-full);
+  transition: width 0.3s ease, background 0.3s ease;
+}
+
+.strength-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Botón primario adulto (color dinámico via CSS var) */
+.btn-adulto-primario {
+  background: var(--btn-color, var(--color-cafe));
+  color: #1a1209;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 15px;
+  border-radius: var(--r-full);
+  transition: opacity var(--t-fast), transform var(--t-fast);
+}
+
+.btn-adulto-primario:hover  { opacity: 0.9; }
+.btn-adulto-primario:active { transform: scale(0.97); }
+
+/* Botón link */
+.btn-link {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  text-align: center;
+  text-decoration: underline;
+  text-decoration-color: var(--border);
+  transition: color var(--t-fast);
+  padding: 4px;
+}
+.btn-link:hover { color: var(--text); }
+
+/* Bloque de código docente */
+.bloque-codigo {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Texto de privacidad */
+.texto-privacidad {
+  font-size: 0.75rem;
+  color: var(--text-faint);
+  text-align: center;
+  line-height: 1.5;
+  padding: 0 8px;
+}

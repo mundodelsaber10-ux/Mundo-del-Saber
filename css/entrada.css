@@ -1,0 +1,180 @@
+/* ── PANTALLA DE ENTRADA ─────────────────────────────────── */
+
+.pagina-entrada {
+  background: radial-gradient(ellipse at 20% 10%, #2d1b69 0%, #0f0a2e 60%);
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.contenedor-entrada {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: var(--max-w);
+  padding: 32px 20px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* ── LOGO ─────────────────────────────────────────────────── */
+.logo-zona {
+  text-align: center;
+  animation: entrada 0.6s ease forwards;
+}
+
+.logo-icono {
+  font-size: 4rem;
+  display: block;
+  margin-bottom: 8px;
+  filter: drop-shadow(0 0 24px rgba(0,201,167,0.5));
+  animation: flotar 3s ease-in-out infinite;
+}
+
+@keyframes flotar {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+
+.logo-titulo {
+  font-family: var(--font-display);
+  font-size: 2.6rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.logo-subtitulo {
+  font-size: 1rem;
+  color: var(--text-muted);
+  font-family: var(--font-body);
+}
+
+/* ── GRID DE ROLES ───────────────────────────────────────── */
+.roles-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ── TARJETA DE ROL ──────────────────────────────────────── */
+.rol-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  border-radius: var(--r-xl);
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  text-align: left;
+  transition: transform var(--t-fast), background var(--t-fast), border-color var(--t-fast), box-shadow var(--t-fast);
+  opacity: 0;
+  animation: entrada var(--t-slow) forwards;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+.rol-card:hover,
+.rol-card:focus-visible {
+  transform: translateY(-3px) scale(1.01);
+  background: var(--surface-hover);
+  box-shadow: var(--shadow-md);
+}
+
+.rol-card:active {
+  transform: scale(0.97);
+}
+
+/* Colores específicos por rol */
+.rol-estudiante {
+  border-color: rgba(0, 201, 167, 0.35);
+  background: rgba(0, 201, 167, 0.08);
+}
+.rol-estudiante:hover {
+  border-color: rgba(0, 201, 167, 0.6);
+  background: rgba(0, 201, 167, 0.14);
+  box-shadow: 0 8px 32px rgba(0, 201, 167, 0.2);
+}
+
+.rol-padre {
+  border-color: rgba(244, 166, 65, 0.35);
+  background: rgba(244, 166, 65, 0.08);
+}
+.rol-padre:hover {
+  border-color: rgba(244, 166, 65, 0.6);
+  background: rgba(244, 166, 65, 0.14);
+  box-shadow: 0 8px 32px rgba(244, 166, 65, 0.2);
+}
+
+.rol-docente {
+  border-color: rgba(139, 92, 246, 0.35);
+  background: rgba(139, 92, 246, 0.08);
+}
+.rol-docente:hover {
+  border-color: rgba(139, 92, 246, 0.6);
+  background: rgba(139, 92, 246, 0.14);
+  box-shadow: 0 8px 32px rgba(139, 92, 246, 0.2);
+}
+
+/* Ícono del rol */
+.rol-icono {
+  font-size: 2.2rem;
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  border-radius: var(--r-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.06);
+}
+
+.rol-estudiante .rol-icono { background: rgba(0,201,167,0.15); }
+.rol-padre      .rol-icono { background: rgba(244,166,65,0.15); }
+.rol-docente    .rol-icono { background: rgba(139,92,246,0.15); }
+
+/* Info del rol */
+.rol-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.rol-nombre {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.rol-desc {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* Flecha */
+.rol-flecha {
+  font-size: 1.2rem;
+  color: var(--text-faint);
+  transition: transform var(--t-fast), color var(--t-fast);
+}
+
+.rol-card:hover .rol-flecha {
+  transform: translateX(4px);
+  color: var(--text-muted);
+}
+
+/* ── NOTA DE VERSIÓN ─────────────────────────────────────── */
+.version-nota {
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--text-faint);
+  animation: entrada 0.6s 0.5s forwards;
+  opacity: 0;
+}

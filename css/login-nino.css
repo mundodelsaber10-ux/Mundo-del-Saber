@@ -1,0 +1,253 @@
+/* ── LOGIN NIÑO ──────────────────────────────────────────── */
+
+.pagina-nino {
+  background: radial-gradient(ellipse at 30% 0%, #0c4a3a 0%, #0f0a2e 55%);
+  gap: 20px;
+  padding-top: 20px;
+}
+
+/* Volver */
+.btn-volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-family: var(--font-body);
+  padding: 8px 4px;
+  transition: color var(--t-fast);
+  align-self: flex-start;
+}
+.btn-volver:hover { color: var(--text); }
+
+/* Header */
+.nino-header { text-align: center; }
+
+.nino-emoji {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 8px;
+  animation: flotar 3s ease-in-out infinite;
+}
+
+.nino-titulo {
+  font-family: var(--font-display);
+  font-size: 1.9rem;
+  font-weight: 800;
+  color: var(--color-heladeria);
+  margin-bottom: 4px;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  background: var(--surface);
+  border-radius: var(--r-full);
+  padding: 4px;
+  gap: 4px;
+  border: 1px solid var(--border);
+}
+
+.tab {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: var(--r-full);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  transition: background var(--t-fast), color var(--t-fast);
+}
+
+.tab.activo {
+  background: var(--color-heladeria);
+  color: #003d32;
+}
+
+/* Panel */
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+}
+
+/* Campo */
+.campo-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.campo-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+}
+
+.campo-ayuda {
+  font-size: 0.75rem;
+  color: var(--text-faint);
+}
+
+.input-grande {
+  font-size: 1.1rem;
+  padding: 14px 16px;
+  border-radius: var(--r-md);
+}
+
+.input-codigo {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  letter-spacing: 0.15em;
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--color-heladeria);
+}
+
+/* ── PIN ──────────────────────────────────────────────────── */
+.pin-zona {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.pin-display {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.pin-circulo {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  transition: background var(--t-fast), border-color var(--t-fast), transform var(--t-fast);
+}
+
+.pin-circulo.lleno {
+  background: var(--color-heladeria);
+  border-color: var(--color-heladeria);
+  transform: scale(1.15);
+}
+
+/* Teclado numérico */
+.teclado-numerico {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  width: 100%;
+  max-width: 280px;
+}
+
+.tecla {
+  padding: 16px 8px;
+  border-radius: var(--r-md);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text);
+  transition: background var(--t-fast), transform var(--t-fast);
+  min-height: 56px;
+}
+
+.tecla:active {
+  transform: scale(0.93);
+  background: var(--surface-hover);
+}
+
+.tecla-borrar {
+  background: rgba(239,68,68,0.1);
+  border-color: rgba(239,68,68,0.25);
+  color: #ef4444;
+}
+
+.tecla-ok {
+  background: rgba(0,201,167,0.12);
+  border-color: rgba(0,201,167,0.3);
+  color: var(--color-heladeria);
+}
+
+/* ── AVATARES ─────────────────────────────────────────────── */
+.avatares-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.avatar-btn {
+  font-size: 2rem;
+  padding: 12px 4px;
+  border-radius: var(--r-md);
+  background: var(--surface);
+  border: 2px solid transparent;
+  transition: border-color var(--t-fast), background var(--t-fast), transform var(--t-fast);
+  text-align: center;
+}
+
+.avatar-btn:active { transform: scale(0.9); }
+
+.avatar-btn.seleccionado {
+  border-color: var(--color-heladeria);
+  background: rgba(0,201,167,0.12);
+}
+
+/* ── PASOS ────────────────────────────────────────────────── */
+.paso { display: flex; flex-direction: column; gap: 14px; }
+.paso.oculto { display: none; }
+
+.paso-titulo {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--color-heladeria);
+  text-align: center;
+}
+
+.paso-botones {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+.paso-botones .btn { flex: 1; }
+
+/* ── CONFIRMACIÓN ─────────────────────────────────────────── */
+.confirmar-zona {
+  text-align: center;
+  background: var(--surface);
+  border: 1px solid rgba(0,201,167,0.3);
+  border-radius: var(--r-xl);
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+}
+
+.confirmar-avatar {
+  font-size: 3.5rem;
+  display: block;
+}
+
+.confirmar-apodo {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--color-heladeria);
+}
+
+.texto-warning {
+  font-size: 0.82rem;
+  color: var(--color-cafe);
+  text-align: center;
+  padding: 10px 12px;
+  background: rgba(244,166,65,0.08);
+  border-radius: var(--r-md);
+  border: 1px solid rgba(244,166,65,0.2);
+}

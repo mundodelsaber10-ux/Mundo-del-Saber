@@ -51,34 +51,48 @@ function setButtonLoading(btn, loading) {
 }
 
 /** Redirige según el rol guardado en sesión */
+/** Redirige según el rol guardado en sesión — CORREGIDO */
 async function redirectByRole() {
   const { data: { session } } = await sb.auth.getSession();
+  
+  // Detectar si ya estamos en la carpeta pages para evitar rutas dobles
+  const isInsidePages = window.location.pathname.includes('/pages/');
+  const pathPrefix = isInsidePages ? '' : 'pages/';
+  const rootPrefix = isInsidePages ? '../' : '';
 
   if (!session) {
-    // Sin sesión de adulto → puede ser un niño (sesión local)
     const kidSession = getKidSession();
     if (kidSession) {
-      window.location.href = 'pages/heladeria.html';
+      window.location.href = `${pathPrefix}heladeria.html`;
       return;
     }
-    window.location.href = 'index.html';
+    window.location.href = `${rootPrefix}index.html`;
     return;
   }
 
-  // Sesión de adulto activa
   const { data: profile } = await sb
     .from('profiles')
     .select('role')
     .eq('id', session.user.id)
     .single();
 
-  if (!profile) { window.location.href = 'index.html'; return; }
+  if (!profile) { 
+    window.location.href = `${rootPrefix}index.html`; 
+    return; 
+  }
 
+  // Redirección inteligente
   switch (profile.role) {
-    case 'parent':   window.location.href = 'pages/cafe.html';   break;
-    case 'teacher':  window.location.href = 'pages/docente.html'; break;
-    case 'specialist': window.location.href = 'pages/cafe.html'; break;
-    default:         window.location.href = 'index.html';
+    case 'parent':
+    case 'adulto':
+    case 'specialist':
+      window.location.href = `${pathPrefix}cafe.html`;
+      break;
+    case 'teacher':
+      window.location.href = `${pathPrefix}docente.html`;
+      break;
+    default:
+      window.location.href = `${rootPrefix}index.html`;
   }
 }
 

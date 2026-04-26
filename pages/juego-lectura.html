@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="theme-color" content="#E91E63">
+  <title>Lectura · Storyboard</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    body { background: #FCE4EC; }
+    .hdr {
+      background: linear-gradient(135deg, #C2185B, #F06292);
+      padding: 16px 20px 20px; position: relative; overflow: hidden;
+    }
+    .hdr::before { content:'📖'; position:absolute; right:-8px; top:-10px; font-size:6rem; opacity:.15; pointer-events:none; }
+    .hdr-top { display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+    .back-btn { width:38px; height:38px; border-radius:12px; background:rgba(255,255,255,.25); border:none; color:white; font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+    .hdr-title { font-family:var(--font-display); font-size:1.3rem; font-weight:800; color:white; }
+    .hdr-sub   { font-size:.8rem; color:rgba(255,255,255,.8); }
+    .game-progress-wrap { background:rgba(255,255,255,.25); border-radius:var(--radius-full); height:10px; overflow:hidden; }
+    .game-progress-bar  { height:100%; background:white; border-radius:var(--radius-full); transition:width .5s cubic-bezier(.16,1,.3,1); }
+    .game-meta { display:flex; justify-content:space-between; margin-top:6px; }
+    .game-meta span { font-size:.78rem; color:rgba(255,255,255,.85); font-weight:600; }
+
+    .game-wrap { padding:20px 16px 60px; max-width:440px; margin:0 auto; }
+
+    /* ——— ESTADO: LEER ——— */
+    .story-card {
+      background: white; border-radius: var(--radius-xl);
+      padding: 24px 20px; margin-bottom: 16px;
+      box-shadow: var(--shadow-md); border: 2px solid #F8BBD0;
+      position: relative;
+    }
+    .story-title-row {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
+    }
+    .story-icon {
+      width: 52px; height: 52px; border-radius: 14px;
+      background: #FCE4EC; display: flex; align-items: center;
+      justify-content: center; font-size: 1.8rem; flex-shrink: 0;
+    }
+    .story-title { font-family:var(--font-display); font-size:1.2rem; font-weight:800; color:#880E4F; }
+    .story-meta  { font-size:.75rem; color:var(--text-2); }
+    .story-text  { font-size:1rem; line-height:1.75; color:var(--text); }
+    .story-text .highlight { background:#FFF9C4; border-radius:4px; padding:1px 3px; }
+
+    /* Read aloud */
+    .read-aloud-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #FCE4EC; color: #880E4F;
+      border: 1.5px solid #F48FB1; border-radius: var(--radius-full);
+      padding: 7px 16px; font-size: .85rem; font-weight: 700;
+      cursor: pointer; margin-bottom: 16px;
+      transition: background .15s;
+    }
+    .read-aloud-btn:hover    { background: #F8BBD0; }
+    .read-aloud-btn.speaking { background: #C2185B; color: white; border-color: #C2185B; }
+
+    .read-cta {
+      width: 100%; padding: 14px;
+      background: #E91E63; color: white;
+      border: none; border-radius: var(--radius-full);
+      font-family: var(--font-display); font-size: 1.1rem; font-weight: 700;
+      cursor: pointer; box-shadow: 0 4px 14px rgba(233,30,99,.35);
+      transition: transform .15s;
+    }
+    .read-cta:hover  { transform: scale(1.02); }
+    .read-cta:active { transform: scale(.97); }
+
+    /* ——— ESTADO: PREGUNTAS ——— */
+    .question-header {
+      text-align: center; margin-bottom: 20px;
+    }
+    .question-num {
+      font-family:var(--font-display); font-size:.85rem;
+      color: #C2185B; font-weight:700;
+      background: #FCE4EC; padding: 4px 14px; border-radius: var(--radius-full);
+      display: inline-block; margin-bottom: 8px;
+    }
+    .question-text {
+      font-family:var(--font-display); font-size:1.2rem;
+      font-weight:800; color:var(--text); line-height:1.3;
+    }
+
+    .options-list { display:flex; flex-direction:column; gap:10px; }
+    .option-btn {
+      padding: 15px 16px; border-radius: var(--radius-lg);
+      background: white; border: 2.5px solid #F8BBD0;
+      font-size: .95rem; font-weight: 600; color: var(--text);
+      text-align: left; cursor: pointer;
+      transition: border-color .15s, transform .1s;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .option-btn .opt-bullet {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: #FCE4EC; color: #C2185B;
+      font-weight: 800; font-size: .85rem;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .option-btn:hover  { border-color: #E91E63; transform: translateX(4px); }
+    .option-btn:active { transform: scale(.98); }
+    .option-btn.correct { background:#E8F5E9; border-color:#4CAF50; }
+    .option-btn.correct .opt-bullet { background:#C8E6C9; color:#2E7D32; }
+    .option-btn.wrong   { background:#FFEBEE; border-color:#EF5350; }
+    .option-btn.wrong   .opt-bullet { background:#FFCDD2; color:#C62828; }
+    .option-btn.disabled { pointer-events:none; opacity:.6; }
+
+    .feedback { text-align:center; font-family:var(--font-display); font-size:1.1rem; font-weight:800; min-height:28px; margin:14px 0; }
+    .feedback.correct { color:#2E7D32; }
+    .feedback.wrong   { color:#C62828; }
+
+    /* ——— RESULTADO ——— */
+    .result-screen { display:none; text-align:center; padding:32px 20px; }
+    .result-screen.active { display:block; }
+    .result-emoji  { font-size:5rem; margin-bottom:12px; animation:popIn .5s cubic-bezier(.16,1,.3,1); }
+    @keyframes popIn { from{transform:scale(0.3);opacity:0}to{transform:scale(1);opacity:1} }
+    .result-title  { font-family:var(--font-display); font-size:2rem; font-weight:800; margin-bottom:6px; }
+    .result-sub    { font-size:1rem; color:var(--text-2); margin-bottom:24px; }
+    .result-pts    { display:inline-block; background:#FCE4EC; color:#880E4F; font-family:var(--font-display); font-size:1.4rem; font-weight:800; padding:10px 28px; border-radius:var(--radius-full); border:2px solid #F48FB1; margin-bottom:28px; }
+    .btn-rosa { background:#E91E63; color:white; box-shadow:0 4px 14px rgba(233,30,99,.4); }
+    .result-btns { display:flex; flex-direction:column; gap:10px; max-width:280px; margin:0 auto; }
+  </style>
+</head>
+<body>
+
+  <div id="page-loader">
+    <div style="display:flex;gap:8px;">
+      <div class="loader-dot" style="background:#E91E63"></div>
+      <div class="loader-dot" style="background:#E91E63"></div>
+      <div class="loader-dot" style="background:#E91E63"></div>
+    </div>
+  </div>
+
+  <div class="hdr">
+    <div class="hdr-top">
+      <button class="back-btn" onclick="confirmExit()">←</button>
+      <div>
+        <p class="hdr-title">Lectura 📖</p>
+        <p class="hdr-sub" id="storyLabel">Mini cuentos y comprensión</p>
+      </div>
+    </div>
+    <div class="game-progress-wrap">
+      <div class="game-progress-bar" id="gameProgressBar" style="width:0%"></div>
+    </div>
+    <div class="game-meta">
+      <span id="stageLabel">Leyendo el cuento...</span>
+      <span id="scoreDisplay">⭐ 0 pts</span>
+    </div>
+  </div>
+
+  <div class="game-wrap">
+
+    <!-- Pantalla de lectura -->
+    <div id="readScreen">
+      <div class="story-card">
+        <div class="story-title-row">
+          <div class="story-icon" id="storyIcon">🐢</div>
+          <div>
+            <p class="story-title" id="storyTitle">La tortuga y la liebre</p>
+            <p class="story-meta"  id="storyMeta">Fábula · ~1 min de lectura</p>
+          </div>
+        </div>
+        <button class="read-aloud-btn" id="readAloudBtn" onclick="readAloud()">
+          🔊 Escuchar cuento
+        </button>
+        <p class="story-text" id="storyText"></p>
+      </div>
+      <button class="read-cta" onclick="startQuestions()">
+        ¡Ya leí! Responder preguntas →
+      </button>
+    </div>
+
+    <!-- Pantalla de preguntas -->
+    <div id="questionsScreen" style="display:none">
+      <div class="question-header">
+        <span class="question-num" id="questionNum">Pregunta 1 de 4</span>
+        <p class="question-text" id="questionText">¿De qué trata el cuento?</p>
+      </div>
+      <div class="options-list" id="optionsList"></div>
+      <div class="feedback" id="feedback"></div>
+    </div>
+
+    <!-- Resultado -->
+    <div class="result-screen" id="resultScreen">
+      <div class="result-emoji" id="resultEmoji">📚</div>
+      <p class="result-title" id="resultTitle">¡Gran lector!</p>
+      <p class="result-sub"   id="resultSub">Entendiste muy bien el cuento</p>
+      <div class="result-pts" id="resultPts">+40 ⭐</div>
+      <div class="result-btns">
+        <button class="btn btn-rosa btn-xl" onclick="nextStory()">Otro cuento 📖</button>
+        <button class="btn btn-outline btn-xl" onclick="window.location.href='heladeria.html'">Volver al inicio 🏠</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase.js"></script>
+  <script>
+
+    /* ====================================================
+       BANCO DE CUENTOS
+    ==================================================== */
+    const STORIES = [
+      {
+        title: 'La tortuga y la liebre',
+        icon:  '🐢',
+        meta:  'Fábula clásica · ~1 min',
+        text:  `Había una vez una liebre muy rápida que se burlaba de una tortuga lenta. "¡Nunca podrás ganarme una carrera!", le decía.
+
+La tortuga, calmada, aceptó el reto. Cuando empezó la carrera, la liebre salió corriendo muy rápido. Tan segura estaba de ganar, que se echó a dormir bajo un árbol.
+
+Mientras tanto, la tortuga caminó sin parar, paso a paso, sin rendirse. Cuando la liebre despertó, ¡la tortuga ya estaba llegando a la meta!
+
+La liebre corrió lo más rápido que pudo, pero era demasiado tarde. La tortuga había ganado la carrera.`,
+        questions: [
+          {
+            text: '¿Por qué la liebre perdió la carrera?',
+            options: ['Porque se quedó dormida', 'Porque era muy lenta', 'Porque se perdió en el bosque', 'Porque la tortuga hizo trampa'],
+            correct: 0,
+          },
+          {
+            text: '¿Qué hizo la tortuga para ganar?',
+            options: ['Corrió muy rápido', 'Caminó sin parar', 'Pidió ayuda a otros animales', 'Tomó un atajo'],
+            correct: 1,
+          },
+          {
+            text: '¿Cuál es la enseñanza principal del cuento?',
+            options: ['Los rápidos siempre ganan', 'La constancia puede ganar a la velocidad', 'Las tortugas son más inteligentes', 'No hagas carreras con animales'],
+            correct: 1,
+          },
+          {
+            text: '¿Cómo era la actitud de la liebre al principio?',
+            options: ['Humilde y respetuosa', 'Presumida y burlona', 'Asustada y nerviosa', 'Tranquila y amable'],
+            correct: 1,
+          },
+        ],
+      },
+      {
+        title: 'El pastorcito mentiroso',
+        icon:  '🐑',
+        meta:  'Fábula clásica · ~1 min',
+        text:  `Un pastorcito cuidaba sus ovejas en las colinas. Un día, aburrido, gritó: "¡El lobo! ¡Viene el lobo!" Los aldeanos corrieron a ayudarlo, pero no había ningún lobo.
+
+El pastorcito se rió mucho. Al día siguiente, hizo lo mismo. Los aldeanos volvieron a correr, y él volvió a reírse.
+
+Pero un tercer día, un lobo de verdad llegó al rebaño. El pastorcito gritó con todas sus fuerzas: "¡El lobo, de verdad esta vez!" Pero ningún aldeano vino. Ya no le creían.
+
+El lobo se llevó muchas ovejas. El pastorcito aprendió que quien miente, pierde la confianza de los demás.`,
+        questions: [
+          {
+            text: '¿Por qué el pastorcito gritó "el lobo" las primeras veces?',
+            options: ['Porque vio un lobo de verdad', 'Porque estaba asustado', 'Porque estaba aburrido', 'Porque quería que todos durmieran'],
+            correct: 2,
+          },
+          {
+            text: '¿Qué pasó cuando llegó el lobo de verdad?',
+            options: ['Los aldeanos corrieron a ayudar', 'Nadie vino porque no le creían', 'El lobo se fue solo', 'Las ovejas se escaparon'],
+            correct: 1,
+          },
+          {
+            text: '¿Qué aprendió el pastorcito?',
+            options: ['Que los lobos son peligrosos', 'Que mentir hace perder la confianza', 'Que no debe cuidar ovejas', 'Que los aldeanos son malos'],
+            correct: 1,
+          },
+          {
+            text: '¿Cuántas veces mintió el pastorcito antes del lobo real?',
+            options: ['Una vez', 'Dos veces', 'Tres veces', 'Cuatro veces'],
+            correct: 1,
+          },
+        ],
+      },
+      {
+        title: 'La hormiga y el saltamontes',
+        icon:  '🐜',
+        meta:  'Fábula clásica · ~1 min',
+        text:  `Durante el verano, una pequeña hormiga trabajaba sin parar. Recogía comida y la guardaba en su hormiguero. El saltamontes, en cambio, cantaba y bailaba todo el día bajo el sol.
+
+"¿Por qué trabajas tanto con este calor?" le preguntó el saltamontes. "¡Deberías disfrutar como yo!"
+
+La hormiga respondió: "Me preparo para el invierno, cuando no haya comida."
+
+Cuando llegó el frío, el saltamontes no tenía nada que comer y pasó mucha hambre. La hormiga, gracias a su esfuerzo, tenía todo lo que necesitaba para sobrevivir.`,
+        questions: [
+          {
+            text: '¿Qué hacía la hormiga durante el verano?',
+            options: ['Cantaba y bailaba', 'Trabajaba y guardaba comida', 'Dormía todo el día', 'Jugaba con el saltamontes'],
+            correct: 1,
+          },
+          {
+            text: '¿Qué le pasó al saltamontes en el invierno?',
+            options: ['Encontró mucha comida', 'La hormiga lo ayudó', 'Pasó hambre', 'Se fue a otro lugar'],
+            correct: 2,
+          },
+          {
+            text: '¿Cuál es la enseñanza del cuento?',
+            options: ['Hay que bailar y cantar siempre', 'Es importante trabajar y prepararse', 'Las hormigas son mejores que los saltamontes', 'El verano es mejor que el invierno'],
+            correct: 1,
+          },
+          {
+            text: '¿Dónde guardaba la hormiga su comida?',
+            options: ['En un árbol', 'En una cueva', 'En su hormiguero', 'Bajo una piedra'],
+            correct: 2,
+          },
+        ],
+      },
+    ];
+
+    /* ====================================================
+       ESTADO
+    ==================================================== */
+    let state = {};
+
+    function initGame(storyIdx = 0) {
+      const story = STORIES[storyIdx % STORIES.length];
+      state = {
+        storyIdx, story,
+        phase:    'read',   // 'read' | 'questions' | 'result'
+        current:  0,
+        score:    0,
+        correct:  0,
+        answered: false,
+      };
+
+      // Cargar cuento
+      document.getElementById('storyIcon').textContent  = story.icon;
+      document.getElementById('storyTitle').textContent = story.title;
+      document.getElementById('storyMeta').textContent  = story.meta;
+      document.getElementById('storyText').textContent  = story.text;
+      document.getElementById('storyLabel').textContent = story.title;
+
+      document.getElementById('readScreen').style.display      = 'block';
+      document.getElementById('questionsScreen').style.display = 'none';
+      document.getElementById('resultScreen').classList.remove('active');
+
+      document.getElementById('gameProgressBar').style.width = '0%';
+      document.getElementById('scoreDisplay').textContent    = '⭐ 0 pts';
+      document.getElementById('stageLabel').textContent      = 'Leyendo el cuento...';
+    }
+
+    /* ====================================================
+       LEER EN VOZ ALTA
+    ==================================================== */
+    function readAloud() {
+      const btn = document.getElementById('readAloudBtn');
+      if (window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
+        btn.classList.remove('speaking');
+        return;
+      }
+      const utt  = new SpeechSynthesisUtterance(state.story.text);
+      utt.lang   = 'es-ES';
+      utt.rate   = 0.9;
+      btn.classList.add('speaking');
+      utt.onend  = () => btn.classList.remove('speaking');
+      window.speechSynthesis.speak(utt);
+    }
+
+    /* ====================================================
+       PREGUNTAS
+    ==================================================== */
+    function startQuestions() {
+      if (window.speechSynthesis.speaking) window.speechSynthesis.cancel();
+      state.phase = 'questions';
+      document.getElementById('readScreen').style.display      = 'none';
+      document.getElementById('questionsScreen').style.display = 'block';
+      renderQuestion();
+    }
+
+    function renderQuestion() {
+      const { story, current } = state;
+      const q     = story.questions[current];
+      const total = story.questions.length;
+
+      document.getElementById('gameProgressBar').style.width = (current / total * 100) + '%';
+      document.getElementById('questionNum').textContent     = `Pregunta ${current + 1} de ${total}`;
+      document.getElementById('questionText').textContent    = q.text;
+      document.getElementById('scoreDisplay').textContent    = `⭐ ${state.score} pts`;
+      document.getElementById('stageLabel').textContent      = `Pregunta ${current + 1} de ${total}`;
+      document.getElementById('feedback').textContent        = '';
+      document.getElementById('feedback').className          = 'feedback';
+      state.answered = false;
+
+      const list = document.getElementById('optionsList');
+      list.innerHTML = '';
+      const bullets = ['A', 'B', 'C', 'D'];
+      q.options.forEach((opt, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerHTML = `<span class="opt-bullet">${bullets[i]}</span>${opt}`;
+        btn.onclick = () => answerQuestion(i === q.correct, btn, q.options[q.correct]);
+        list.appendChild(btn);
+      });
+    }
+
+    function answerQuestion(isOk, btn, correctText) {
+      if (state.answered) return;
+      state.answered = true;
+
+      document.querySelectorAll('.option-btn').forEach(b => {
+        b.classList.add('disabled');
+        if (b.textContent.trim().includes(correctText)) b.classList.add('correct');
+      });
+      if (!isOk) btn.classList.add('wrong');
+
+      const pts = isOk ? 15 : 0;
+      if (isOk) { state.score += pts; state.correct++; }
+      const el = document.getElementById('feedback');
+      el.textContent = isOk ? `¡Correcto! +${pts} ⭐` : `La respuesta era: "${correctText}" 😅`;
+      el.className   = `feedback ${isOk ? 'correct' : 'wrong'}`;
+      document.getElementById('scoreDisplay').textContent = `⭐ ${state.score} pts`;
+
+      setTimeout(() => {
+        state.current++;
+        if (state.current < state.story.questions.length) renderQuestion();
+        else endGame();
+      }, 1800);
+    }
+
+    /* ====================================================
+       FIN
+    ==================================================== */
+    async function endGame() {
+      document.getElementById('gameProgressBar').style.width = '100%';
+      document.getElementById('questionsScreen').style.display = 'none';
+
+      const pct = state.correct / state.story.questions.length;
+      let emoji, title, sub;
+      if (pct >= .75)     { emoji='📚'; title='¡Gran lector!';   sub='¡Entendiste muy bien el cuento!'; }
+      else if (pct >= .5) { emoji='👍'; title='¡Buen trabajo!';  sub='Sigue leyendo, cada vez mejor.'; }
+      else                { emoji='💪'; title='¡Sigue leyendo!'; sub='Intenta leer el cuento otra vez con calma.'; }
+
+      document.getElementById('resultEmoji').textContent = emoji;
+      document.getElementById('resultTitle').textContent = title;
+      document.getElementById('resultSub').textContent   = sub;
+      document.getElementById('resultPts').textContent   = `+${state.score} ⭐`;
+      document.getElementById('resultScreen').classList.add('active');
+
+      const kid = getKidSession();
+      if (kid && state.score > 0) {
+        await sb.from('activity_log').insert({
+          student_id: kid.id, module: 'lectura',
+          activity: state.story.title, score: state.score, completed: pct >= .5,
+        });
+        await sb.from('students').update({ points: (kid.points || 0) + state.score }).eq('id', kid.id);
+        kid.points = (kid.points || 0) + state.score;
+        saveKidSession(kid);
+      }
+    }
+
+    function nextStory() {
+      initGame(state.storyIdx + 1);
+    }
+
+    function confirmExit() {
+      if (window.speechSynthesis.speaking) window.speechSynthesis.cancel();
+      window.location.href = 'heladeria.html';
+    }
+
+    /* ====================================================
+       ARRANQUE
+    ==================================================== */
+    (async () => {
+      const kid = getKidSession();
+      if (!kid) { window.location.href = '../index.html'; return; }
+      hideLoader();
+      initGame(0);
+    })();
+  </script>
+</body>
+</html>

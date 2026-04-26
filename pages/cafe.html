@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="theme-color" content="#E8922A">
+  <title>El Café · Storyboard</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    body { background: var(--cafe-light); }
+
+    /* ——— HEADER ——— */
+    .hdr {
+      background: linear-gradient(135deg, #B56A0F, #E8922A);
+      padding: 20px 20px 24px;
+      position: relative; overflow: hidden;
+    }
+    .hdr::before {
+      content: '☕';
+      position: absolute; right: -10px; top: -16px;
+      font-size: 7rem; opacity: .15; pointer-events: none;
+    }
+    .hdr-top {
+      display: flex; align-items: center;
+      justify-content: space-between; margin-bottom: 16px;
+    }
+    .hdr-greeting {
+      font-family: var(--font-display);
+      font-size: 1.3rem; font-weight: 800; color: white; line-height: 1.1;
+    }
+    .hdr-sub { font-size: .85rem; color: rgba(255,255,255,.8); margin-top: 2px; }
+    .hdr-avatar {
+      width: 44px; height: 44px; border-radius: 14px;
+      background: rgba(255,255,255,.25);
+      border: 2px solid rgba(255,255,255,.4);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; font-weight: 800; color: white;
+      cursor: pointer; flex-shrink: 0;
+      font-family: var(--font-display);
+    }
+
+    /* Buscador de hijo */
+    .child-search {
+      background: rgba(255,255,255,.2);
+      border: 1.5px solid rgba(255,255,255,.35);
+      border-radius: var(--radius-lg);
+      padding: 10px 14px;
+      display: flex; align-items: center; gap: 10px;
+      cursor: pointer; transition: background .15s;
+    }
+    .child-search:hover { background: rgba(255,255,255,.28); }
+    .child-search-ico { font-size: 1.1rem; }
+    .child-search-txt { font-size: .9rem; color: rgba(255,255,255,.9); font-weight: 600; flex: 1; }
+    .child-search-arrow { font-size: .85rem; color: rgba(255,255,255,.7); }
+
+    /* ——— CONTENIDO ——— */
+    .content { padding: 20px 16px 80px; max-width: 480px; margin: 0 auto; }
+
+    .section-title {
+      font-family: var(--font-display); font-size: 1rem; font-weight: 700;
+      color: var(--cafe-dark); margin-bottom: 12px;
+      display: flex; align-items: center; gap: 6px;
+    }
+
+    /* ——— TARJETA DE HIJO ——— */
+    .child-card {
+      background: white; border-radius: var(--radius-xl);
+      border: 2px solid var(--cafe-soft); padding: 18px;
+      margin-bottom: 20px; box-shadow: var(--shadow-sm);
+    }
+    .child-card-header {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
+    }
+    .child-avatar-big {
+      width: 52px; height: 52px; border-radius: 16px;
+      background: var(--cafe-light); display: flex;
+      align-items: center; justify-content: center;
+      font-size: 1.8rem; flex-shrink: 0;
+    }
+    .child-name {
+      font-family: var(--font-display); font-size: 1.2rem;
+      font-weight: 800; color: var(--text);
+    }
+    .child-class { font-size: .8rem; color: var(--text-2); margin-top: 2px; }
+    .child-pts {
+      margin-left: auto;
+      background: var(--cafe-light); color: var(--cafe-dark);
+      border: 1.5px solid var(--cafe-soft);
+      border-radius: var(--radius-full);
+      padding: 5px 14px;
+      font-family: var(--font-display); font-size: .9rem; font-weight: 800;
+    }
+
+    /* Stats del hijo */
+    .child-stats {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+    }
+    .stat-box {
+      background: var(--cafe-light); border-radius: var(--radius-md);
+      padding: 10px 8px; text-align: center;
+    }
+    .stat-val { font-family: var(--font-display); font-size: 1.3rem; font-weight: 800; color: var(--cafe-dark); }
+    .stat-lbl { font-size: .68rem; color: var(--text-2); margin-top: 2px; }
+
+    /* Progreso por materia */
+    .progress-list { margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
+    .prog-row { display: flex; align-items: center; gap: 10px; }
+    .prog-ico { font-size: 1.1rem; flex-shrink: 0; width: 24px; text-align: center; }
+    .prog-label { font-size: .8rem; font-weight: 600; color: var(--text); width: 80px; flex-shrink: 0; }
+    .prog-bar-wrap { flex: 1; height: 8px; background: var(--cafe-light); border-radius: var(--radius-full); overflow: hidden; }
+    .prog-bar-fill { height: 100%; background: var(--cafe); border-radius: var(--radius-full); transition: width .8s cubic-bezier(.16,1,.3,1); }
+    .prog-pct { font-size: .75rem; font-weight: 700; color: var(--cafe-dark); width: 32px; text-align: right; flex-shrink: 0; }
+
+    /* Sin hijo vinculado */
+    .no-child-card {
+      background: white; border-radius: var(--radius-xl);
+      border: 2px dashed var(--cafe-soft); padding: 28px 20px;
+      text-align: center; margin-bottom: 20px;
+    }
+    .no-child-card .ico { font-size: 2.5rem; margin-bottom: 10px; }
+    .no-child-card h3 { font-family: var(--font-display); font-size: 1.1rem; font-weight: 800; margin-bottom: 4px; }
+    .no-child-card p  { font-size: .85rem; color: var(--text-2); margin-bottom: 16px; }
+
+    /* ——— ACTIVIDAD RECIENTE ——— */
+    .activity-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
+    .activity-item {
+      background: white; border-radius: var(--radius-lg);
+      padding: 12px 14px; display: flex; align-items: center;
+      gap: 12px; border: 1.5px solid var(--border);
+    }
+    .act-ico {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: var(--cafe-light); display: flex;
+      align-items: center; justify-content: center;
+      font-size: 1.1rem; flex-shrink: 0;
+    }
+    .act-info { flex: 1; }
+    .act-title { font-size: .88rem; font-weight: 700; color: var(--text); }
+    .act-meta  { font-size: .74rem; color: var(--text-2); margin-top: 2px; }
+    .act-pts   {
+      font-family: var(--font-display); font-size: .85rem; font-weight: 800;
+      color: var(--cafe-dark); background: var(--cafe-light);
+      padding: 3px 10px; border-radius: var(--radius-full); flex-shrink: 0;
+    }
+
+    /* ——— ACCESOS RÁPIDOS ——— */
+    .quick-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px;
+    }
+    .quick-card {
+      background: white; border-radius: var(--radius-lg);
+      padding: 16px 14px; border: 1.5px solid var(--border);
+      cursor: pointer; text-align: left;
+      transition: transform .15s, box-shadow .15s;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .quick-card:hover  { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+    .quick-card:active { transform: scale(.97); }
+    .quick-icon { font-size: 1.6rem; }
+    .quick-title { font-family: var(--font-display); font-size: .95rem; font-weight: 700; color: var(--text); }
+    .quick-desc  { font-size: .75rem; color: var(--text-2); }
+
+    /* ——— BOTTOM NAV ——— */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: white; border-top: 1.5px solid var(--border);
+      display: flex; padding: 10px 0 calc(10px + env(safe-area-inset-bottom));
+      z-index: 100;
+    }
+    .nav-btn {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; gap: 3px; padding: 6px 4px;
+      font-size: .65rem; font-weight: 700; color: var(--text-3); cursor: pointer;
+    }
+    .nav-btn .nav-ico { font-size: 1.4rem; }
+    .nav-btn.active { color: var(--cafe-dark); }
+
+    /* ——— MODAL: VINCULAR HIJO ——— */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 200;
+      display: flex; align-items: flex-end; justify-content: center;
+      opacity: 0; visibility: hidden; transition: opacity .25s, visibility .25s;
+    }
+    .modal-overlay.open { opacity: 1; visibility: visible; }
+    .modal-sheet {
+      background: white; border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+      padding: 24px 20px calc(32px + env(safe-area-inset-bottom));
+      width: 100%; max-width: 480px;
+      transform: translateY(100%); transition: transform .35s cubic-bezier(.16,1,.3,1);
+    }
+    .modal-overlay.open .modal-sheet { transform: translateY(0); }
+    .modal-handle { width: 40px; height: 4px; background: var(--border); border-radius: var(--radius-full); margin: 0 auto 20px; }
+    .modal-title { font-family: var(--font-display); font-size: 1.3rem; font-weight: 800; margin-bottom: 4px; }
+    .modal-sub   { font-size: .9rem; color: var(--text-2); margin-bottom: 20px; }
+
+    /* Resultados de búsqueda de hijo */
+    .search-result {
+      background: var(--cafe-light); border: 2px solid var(--cafe-soft);
+      border-radius: var(--radius-lg); padding: 14px 16px;
+      display: flex; align-items: center; gap: 12px;
+      cursor: pointer; margin-bottom: 10px;
+      transition: border-color .15s;
+    }
+    .search-result:hover { border-color: var(--cafe); }
+    .search-result .sr-avatar { font-size: 1.6rem; }
+    .search-result .sr-name   { font-weight: 700; font-size: .95rem; }
+    .search-result .sr-pts    { font-size: .8rem; color: var(--text-2); }
+    .btn-cafe { background: var(--cafe); color: white; box-shadow: 0 4px 14px rgba(232,146,42,.35); }
+  </style>
+</head>
+<body>
+
+  <div id="page-loader">
+    <div style="display:flex;gap:8px;">
+      <div class="loader-dot" style="background:var(--cafe)"></div>
+      <div class="loader-dot" style="background:var(--cafe)"></div>
+      <div class="loader-dot" style="background:var(--cafe)"></div>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <div class="hdr">
+    <div class="hdr-top">
+      <div>
+        <p class="hdr-greeting" id="greeting">¡Bienvenido al Café! ☕</p>
+        <p class="hdr-sub">Sigue el progreso de tu hijo/a</p>
+      </div>
+      <div class="hdr-avatar" id="hdrAvatar" onclick="logout()">?</div>
+    </div>
+    <div class="child-search" onclick="openLinkModal()">
+      <span class="child-search-ico">🔍</span>
+      <span class="child-search-txt" id="childSearchTxt">Buscar o vincular a mi hijo/a</span>
+      <span class="child-search-arrow">→</span>
+    </div>
+  </div>
+
+  <!-- CONTENIDO -->
+  <div class="content">
+
+    <!-- Tarjeta del hijo -->
+    <div id="childSection">
+      <!-- Se llena dinámicamente -->
+    </div>
+
+    <!-- Actividad reciente -->
+    <div id="activitySection" style="display:none">
+      <p class="section-title">📊 Actividad reciente</p>
+      <div class="activity-list" id="activityList"></div>
+    </div>
+
+    <!-- Accesos rápidos -->
+    <p class="section-title">🚀 Accesos rápidos</p>
+    <div class="quick-grid">
+      <button class="quick-card" onclick="window.location.href='cafe-foro.html'">
+        <span class="quick-icon">💬</span>
+        <p class="quick-title">Foro del Café</p>
+        <p class="quick-desc">Habla con otros padres y especialistas</p>
+      </button>
+      <button class="quick-card" onclick="openLinkModal()">
+        <span class="quick-icon">🔗</span>
+        <p class="quick-title">Vincular hijo/a</p>
+        <p class="quick-desc">Busca por apodo y conéctate</p>
+      </button>
+      <button class="quick-card" onclick="showToast('Próximamente: notificaciones push 🔔','info')">
+        <span class="quick-icon">🔔</span>
+        <p class="quick-title">Notificaciones</p>
+        <p class="quick-desc">Alertas de actividad y logros</p>
+      </button>
+      <button class="quick-card" onclick="showToast('Próximamente: mensajes directos 📩','info')">
+        <span class="quick-icon">📩</span>
+        <p class="quick-title">Mensajes</p>
+        <p class="quick-desc">Escríbele al docente</p>
+      </button>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <button class="nav-btn active">
+      <span class="nav-ico">🏠</span><span>Inicio</span>
+    </button>
+    <button class="nav-btn" onclick="window.location.href='cafe-foro.html'">
+      <span class="nav-ico">💬</span><span>Foro</span>
+    </button>
+    <button class="nav-btn" onclick="openLinkModal()">
+      <span class="nav-ico">👶</span><span>Mi hijo/a</span>
+    </button>
+    <button class="nav-btn" onclick="logout()">
+      <span class="nav-ico">🚪</span><span>Salir</span>
+    </button>
+  </nav>
+
+  <!-- MODAL: Vincular hijo -->
+  <div class="modal-overlay" id="linkModal"
+       onclick="if(event.target===this)this.classList.remove('open')">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <p class="modal-title">🔍 Buscar a mi hijo/a</p>
+      <p class="modal-sub">Escribe el apodo con el que se registró en La Heladería.</p>
+
+      <div class="field-group">
+        <input class="field-input cafe" id="childNickInput"
+               type="text" placeholder="Apodo del estudiante"
+               oninput="searchChild()">
+      </div>
+
+      <div id="searchResults"></div>
+
+      <button class="btn btn-outline" style="margin-top:8px"
+              onclick="document.getElementById('linkModal').classList.remove('open')">
+        Cancelar
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL: Perfil -->
+  <div class="modal-overlay" id="profileModal"
+       onclick="if(event.target===this)this.classList.remove('open')">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div style="text-align:center;margin-bottom:20px">
+        <div style="font-size:3rem;margin-bottom:6px" id="profileInitial">?</div>
+        <p style="font-family:var(--font-display);font-size:1.3rem;font-weight:800" id="profileName">-</p>
+        <p style="font-size:.85rem;color:var(--text-2)" id="profileRole">-</p>
+      </div>
+      <button class="btn btn-outline" style="color:var(--error);border-color:var(--error)" onclick="logout()">
+        Cerrar sesión
+      </button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase.js"></script>
+  <script>
+
+    let profile  = null;
+    let linkedKid = null;
+    let searchTimeout;
+
+    const MODULE_INFO = {
+      matematica: { icon:'🔢', label:'Matemáticas' },
+      ingles:     { icon:'🌎', label:'Inglés'       },
+      lectura:    { icon:'📖', label:'Lectura'       },
+      arte:       { icon:'🎨', label:'Arte'          },
+      deporte:    { icon:'⚽', label:'Deporte'       },
+      tecnologia: { icon:'💻', label:'Tecnología'    },
+    };
+
+    /* ============ INIT ============ */
+    async function init() {
+      const { data: { session } } = await sb.auth.getSession();
+      if (!session) { window.location.href = '../index.html'; return; }
+
+      const { data } = await sb.from('profiles').select('*').eq('id', session.user.id).single();
+      if (!data) { window.location.href = '../index.html'; return; }
+      profile = data;
+
+      // Header
+      const initials = data.full_name?.split(' ').map(w=>w[0]).slice(0,2).join('') || '?';
+      document.getElementById('greeting').textContent = `¡Hola, ${data.full_name?.split(' ')[0]}! ☕`;
+      document.getElementById('hdrAvatar').textContent = initials;
+      document.getElementById('profileInitial').textContent = initials;
+      document.getElementById('profileName').textContent    = data.full_name;
+      document.getElementById('profileRole').textContent    = roleLabel(data.role);
+
+      // Cargar hijo vinculado
+      await loadLinkedChild(session.user.id);
+      hideLoader();
+    }
+
+    function roleLabel(role) {
+      const map = { parent:'Padre / Madre', relative:'Familiar', teacher:'Docente', specialist:'Especialista' };
+      return map[role] || role;
+    }
+
+    /* ============ CARGAR HIJO VINCULADO ============ */
+    async function loadLinkedChild(parentId) {
+      const { data: links } = await sb
+        .from('parent_student')
+        .select('student_id, students(id, nickname, avatar_emoji, points, class_code)')
+        .eq('parent_id', parentId)
+        .limit(1);
+
+      const section = document.getElementById('childSection');
+
+      if (!links || links.length === 0) {
+        section.innerHTML = `
+          <div class="no-child-card">
+            <div class="ico">👶</div>
+            <h3>Sin hijo/a vinculado aún</h3>
+            <p>Busca el apodo de tu hijo/a para ver su progreso en tiempo real.</p>
+            <button class="btn btn-cafe" onclick="openLinkModal()">Vincular ahora →</button>
+          </div>`;
+        return;
+      }
+
+      linkedKid = links[0].students;
+      document.getElementById('childSearchTxt').textContent = `Viendo: ${linkedKid.nickname}`;
+
+      // Clase
+      let className = 'Sin salón asignado';
+      if (linkedKid.class_code) {
+        const { data: cls } = await sb.from('classes').select('name').eq('code', linkedKid.class_code).maybeSingle();
+        if (cls) className = `Salón: ${cls.name}`;
+      }
+
+      section.innerHTML = `
+        <div class="child-card">
+          <div class="child-card-header">
+            <div class="child-avatar-big">${linkedKid.avatar_emoji || '🐻'}</div>
+            <div>
+              <p class="child-name">${linkedKid.nickname}</p>
+              <p class="child-class">${className}</p>
+            </div>
+            <span class="child-pts">⭐ ${linkedKid.points || 0}</span>
+          </div>
+          <div class="child-stats" id="childStats">
+            <div class="stat-box"><p class="stat-val" id="statActs">-</p><p class="stat-lbl">Actividades</p></div>
+            <div class="stat-box"><p class="stat-val" id="statDays">-</p><p class="stat-lbl">Días activo</p></div>
+            <div class="stat-box"><p class="stat-val" id="statStreak">-</p><p class="stat-lbl">Racha</p></div>
+          </div>
+          <div class="progress-list" id="progressList"></div>
+        </div>`;
+
+      await loadChildActivity(linkedKid.id);
+    }
+
+    /* ============ CARGAR ACTIVIDAD DEL HIJO ============ */
+    async function loadChildActivity(studentId) {
+      const { data: logs } = await sb
+        .from('activity_log')
+        .select('*')
+        .eq('student_id', studentId)
+        .order('created_at', { ascending: false });
+
+      if (!logs) return;
+
+      // Stats generales
+      const totalActs = logs.length;
+      const days = new Set(logs.map(l => l.created_at?.slice(0,10))).size;
+      document.getElementById('statActs').textContent   = totalActs;
+      document.getElementById('statDays').textContent   = days;
+      document.getElementById('statStreak').textContent = days > 0 ? `${days}🔥` : '0';
+
+      // Progreso por módulo
+      const totals = {};
+      logs.forEach(l => { totals[l.module] = (totals[l.module] || 0) + l.score; });
+      const progList = document.getElementById('progressList');
+      if (progList) {
+        Object.entries(MODULE_INFO).forEach(([mod, info]) => {
+          const pts = totals[mod] || 0;
+          const pct = Math.min(Math.round((pts / 200) * 100), 100);
+          const row = document.createElement('div');
+          row.className = 'prog-row';
+          row.innerHTML = `
+            <span class="prog-ico">${info.icon}</span>
+            <span class="prog-label">${info.label}</span>
+            <div class="prog-bar-wrap">
+              <div class="prog-bar-fill" style="width:0%" data-pct="${pct}"></div>
+            </div>
+            <span class="prog-pct">${pct}%</span>`;
+          progList.appendChild(row);
+        });
+        setTimeout(() => {
+          document.querySelectorAll('.prog-bar-fill').forEach(b => {
+            b.style.width = b.dataset.pct + '%';
+          });
+        }, 400);
+      }
+
+      // Actividad reciente
+      const actSection = document.getElementById('activitySection');
+      const actList    = document.getElementById('activityList');
+      if (logs.length > 0) {
+        actSection.style.display = 'block';
+        logs.slice(0, 8).forEach(log => {
+          const mod  = MODULE_INFO[log.module] || { icon:'📚', label: log.module };
+          const date = new Date(log.created_at).toLocaleDateString('es', { day:'numeric', month:'short' });
+          const item = document.createElement('div');
+          item.className = 'activity-item';
+          item.innerHTML = `
+            <div class="act-ico">${mod.icon}</div>
+            <div class="act-info">
+              <p class="act-title">${log.activity}</p>
+              <p class="act-meta">${mod.label} · ${date}${log.completed ? ' · ✅ Completado' : ''}</p>
+            </div>
+            <span class="act-pts">+${log.score}⭐</span>`;
+          actList.appendChild(item);
+        });
+      }
+    }
+
+    /* ============ BUSCAR HIJO ============ */
+    function openLinkModal() {
+      document.getElementById('childNickInput').value = '';
+      document.getElementById('searchResults').innerHTML = '';
+      document.getElementById('linkModal').classList.add('open');
+      setTimeout(() => document.getElementById('childNickInput').focus(), 350);
+    }
+
+    function searchChild() {
+      clearTimeout(searchTimeout);
+      const nick = document.getElementById('childNickInput').value.trim();
+      const res  = document.getElementById('searchResults');
+      res.innerHTML = '';
+      if (nick.length < 2) return;
+
+      searchTimeout = setTimeout(async () => {
+        const { data } = await sb
+          .from('students')
+          .select('id, nickname, avatar_emoji, points')
+          .ilike('nickname', `%${nick}%`)
+          .limit(5);
+
+        if (!data || data.length === 0) {
+          res.innerHTML = `<p style="text-align:center;color:var(--text-2);font-size:.85rem;padding:12px 0">No encontré ese apodo 🤔</p>`;
+          return;
+        }
+
+        data.forEach(kid => {
+          const div = document.createElement('div');
+          div.className = 'search-result';
+          div.innerHTML = `
+            <span class="sr-avatar">${kid.avatar_emoji || '🐻'}</span>
+            <div>
+              <p class="sr-name">${kid.nickname}</p>
+              <p class="sr-pts">⭐ ${kid.points || 0} estrellas</p>
+            </div>
+            <span style="margin-left:auto;font-size:.8rem;color:var(--cafe-dark);font-weight:700">Vincular →</span>`;
+          div.onclick = () => linkChild(kid);
+          res.appendChild(div);
+        });
+      }, 450);
+    }
+
+    async function linkChild(kid) {
+      const { error } = await sb.from('parent_student').upsert({
+        parent_id:  profile.id,
+        student_id: kid.id,
+      });
+      if (error) { showToast('Error al vincular. Intenta de nuevo.', 'error'); return; }
+      document.getElementById('linkModal').classList.remove('open');
+      showToast(`¡Vinculado con ${kid.nickname}! 🎉`, 'success');
+      setTimeout(() => location.reload(), 800);
+    }
+
+    /* ============ LOGOUT ============ */
+    async function logout() {
+      await sb.auth.signOut();
+      window.location.href = '../index.html';
+    }
+
+    init();
+  </script>
+</body>
+</html>

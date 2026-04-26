@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="theme-color" content="#7B68EE">
+  <title>Panel Docente · Storyboard</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    body { background: var(--creativo-light); }
+
+    .hdr {
+      background: linear-gradient(135deg, var(--creativo-dark), var(--creativo));
+      padding: 20px 20px 24px; position: relative; overflow: hidden;
+    }
+    .hdr::before { content:'📚'; position:absolute; right:-8px; top:-10px; font-size:6rem; opacity:.15; pointer-events:none; }
+    .hdr-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:4px; }
+    .hdr-title { font-family:var(--font-display); font-size:1.3rem; font-weight:800; color:white; line-height:1.1; }
+    .hdr-sub   { font-size:.85rem; color:rgba(255,255,255,.8); margin-top:2px; }
+    .logout-btn { background:rgba(255,255,255,.2); border:none; color:white; border-radius:10px; padding:7px 14px; font-size:.8rem; font-weight:700; cursor:pointer; }
+
+    /* ——— TABS ——— */
+    .tabs-bar {
+      display:flex; background:white; border-bottom:1.5px solid var(--border);
+      overflow-x:auto; scrollbar-width:none;
+    }
+    .tabs-bar::-webkit-scrollbar { display:none; }
+    .tab-btn {
+      padding:12px 16px; font-size:.85rem; font-weight:700;
+      color:var(--text-2); white-space:nowrap; flex-shrink:0;
+      border-bottom:2.5px solid transparent; transition:color .15s, border-color .15s;
+      cursor:pointer;
+    }
+    .tab-btn.active { color:var(--creativo-dark); border-bottom-color:var(--creativo); }
+
+    .view { display:none; }
+    .view.active { display:block; }
+
+    /* ——— CONTENIDO ——— */
+    .content { padding:20px 16px 80px; max-width:480px; margin:0 auto; }
+
+    .section-title { font-family:var(--font-display); font-size:1rem; font-weight:700; color:var(--creativo-dark); margin-bottom:12px; display:flex; align-items:center; gap:6px; }
+
+    /* ——— TARJETA DE SALÓN ——— */
+    .class-card {
+      background:white; border-radius:var(--radius-xl); padding:20px;
+      border:2px solid var(--creativo-soft); margin-bottom:20px; box-shadow:var(--shadow-sm);
+    }
+    .class-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+    .class-name { font-family:var(--font-display); font-size:1.2rem; font-weight:800; color:var(--text); }
+    .class-code-badge {
+      background:var(--creativo-light); color:var(--creativo-dark);
+      border:1.5px solid var(--creativo-soft); border-radius:var(--radius-md);
+      padding:6px 14px; font-family:var(--font-display);
+      font-size:1.1rem; font-weight:800; letter-spacing:2px; cursor:pointer;
+      transition:background .15s;
+    }
+    .class-code-badge:hover { background:var(--creativo-soft); }
+    .class-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+    .cs-box { background:var(--creativo-light); border-radius:var(--radius-md); padding:10px 8px; text-align:center; }
+    .cs-val { font-family:var(--font-display); font-size:1.3rem; font-weight:800; color:var(--creativo-dark); }
+    .cs-lbl { font-size:.68rem; color:var(--text-2); margin-top:2px; }
+
+    /* Crear salón */
+    .create-class-card {
+      background:white; border-radius:var(--radius-xl);
+      border:2px dashed var(--creativo-soft); padding:28px 20px;
+      text-align:center; margin-bottom:20px;
+    }
+    .create-class-card .ico { font-size:2.5rem; margin-bottom:10px; }
+    .create-class-card h3 { font-family:var(--font-display); font-size:1.1rem; font-weight:800; margin-bottom:4px; }
+    .create-class-card p  { font-size:.85rem; color:var(--text-2); margin-bottom:16px; }
+    .btn-purple { background:var(--creativo); color:white; box-shadow:0 4px 14px rgba(123,104,238,.4); }
+
+    /* ——— LISTA DE ESTUDIANTES ——— */
+    .student-list { display:flex; flex-direction:column; gap:8px; margin-bottom:20px; }
+    .student-item {
+      background:white; border-radius:var(--radius-lg); padding:12px 14px;
+      display:flex; align-items:center; gap:12px; border:1.5px solid var(--border);
+    }
+    .stu-avatar { font-size:1.4rem; flex-shrink:0; }
+    .stu-info   { flex:1; }
+    .stu-name   { font-size:.9rem; font-weight:700; color:var(--text); }
+    .stu-meta   { font-size:.74rem; color:var(--text-2); margin-top:2px; }
+    .stu-pts    { font-family:var(--font-display); font-size:.85rem; font-weight:800; color:var(--creativo-dark); background:var(--creativo-light); padding:3px 10px; border-radius:var(--radius-full); flex-shrink:0; }
+
+    /* ——— MODERACIÓN ——— */
+    .mod-card {
+      background:white; border-radius:var(--radius-xl); padding:16px;
+      border:1.5px solid var(--border); margin-bottom:10px; box-shadow:var(--shadow-sm);
+    }
+    .mod-header { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+    .mod-avatar { font-size:1.3rem; }
+    .mod-author { font-size:.85rem; font-weight:700; }
+    .mod-type   { font-size:.72rem; color:var(--text-2); }
+    .mod-title  { font-family:var(--font-display); font-size:.95rem; font-weight:800; color:var(--creativo-dark); margin-bottom:4px; }
+    .mod-text   { font-size:.85rem; color:var(--text); line-height:1.5; margin-bottom:12px; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+    .mod-actions { display:flex; gap:8px; }
+    .mod-approve {
+      flex:1; padding:9px; border-radius:var(--radius-full);
+      background:#E8F5E9; color:#2E7D32; border:1.5px solid #A5D6A7;
+      font-size:.85rem; font-weight:700; cursor:pointer; transition:background .15s;
+    }
+    .mod-approve:hover { background:#C8E6C9; }
+    .mod-reject {
+      flex:1; padding:9px; border-radius:var(--radius-full);
+      background:#FFEBEE; color:#C62828; border:1.5px solid #FFCDD2;
+      font-size:.85rem; font-weight:700; cursor:pointer; transition:background .15s;
+    }
+    .mod-reject:hover { background:#FFCDD2; }
+
+    /* ——— BOTTOM NAV ——— */
+    .bottom-nav { position:fixed; bottom:0; left:0; right:0; background:white; border-top:1.5px solid var(--border); display:flex; padding:10px 0 calc(10px + env(safe-area-inset-bottom)); z-index:100; }
+    .nav-btn { flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:6px 4px; font-size:.65rem; font-weight:700; color:var(--text-3); cursor:pointer; }
+    .nav-btn .nav-ico { font-size:1.4rem; }
+    .nav-btn.active { color:var(--creativo-dark); }
+
+    /* ——— MODAL: Crear salón ——— */
+    .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:200; display:flex; align-items:flex-end; justify-content:center; opacity:0; visibility:hidden; transition:opacity .25s, visibility .25s; }
+    .modal-overlay.open { opacity:1; visibility:visible; }
+    .modal-sheet { background:white; border-radius:var(--radius-xl) var(--radius-xl) 0 0; padding:24px 20px calc(32px + env(safe-area-inset-bottom)); width:100%; max-width:480px; transform:translateY(100%); transition:transform .35s cubic-bezier(.16,1,.3,1); }
+    .modal-overlay.open .modal-sheet { transform:translateY(0); }
+    .modal-handle { width:40px; height:4px; background:var(--border); border-radius:var(--radius-full); margin:0 auto 20px; }
+    .modal-title  { font-family:var(--font-display); font-size:1.3rem; font-weight:800; margin-bottom:4px; }
+    .modal-sub    { font-size:.9rem; color:var(--text-2); margin-bottom:20px; }
+
+    .empty-state { text-align:center; padding:40px 20px; color:var(--text-3); }
+    .empty-state .ico { font-size:2.5rem; margin-bottom:8px; }
+  </style>
+</head>
+<body>
+
+  <div id="page-loader">
+    <div style="display:flex;gap:8px;">
+      <div class="loader-dot" style="background:var(--creativo)"></div>
+      <div class="loader-dot" style="background:var(--creativo)"></div>
+      <div class="loader-dot" style="background:var(--creativo)"></div>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <div class="hdr">
+    <div class="hdr-top">
+      <div>
+        <p class="hdr-title" id="hdrTitle">Panel Docente 📚</p>
+        <p class="hdr-sub"   id="hdrSub">Cargando...</p>
+      </div>
+      <button class="logout-btn" onclick="logout()">Salir →</button>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs-bar">
+    <button class="tab-btn active" onclick="switchTab('salon',this)">🏫 Mi Salón</button>
+    <button class="tab-btn"        onclick="switchTab('estudiantes',this)">👥 Estudiantes</button>
+    <button class="tab-btn"        onclick="switchTab('moderacion',this)">✅ Moderación</button>
+    <button class="tab-btn"        onclick="switchTab('foro',this)">💬 Foro</button>
+  </div>
+
+  <div class="content">
+
+    <!-- ============================
+         TAB: MI SALÓN
+    ============================ -->
+    <div class="view active" id="viewSalon">
+      <div id="classSection">
+        <!-- Se llena dinámicamente -->
+      </div>
+    </div>
+
+    <!-- ============================
+         TAB: ESTUDIANTES
+    ============================ -->
+    <div class="view" id="viewEstudiantes">
+      <p class="section-title">👥 Estudiantes en mi salón</p>
+      <div class="student-list" id="studentList">
+        <div class="empty-state"><div class="ico">👥</div><p>Cargando...</p></div>
+      </div>
+    </div>
+
+    <!-- ============================
+         TAB: MODERACIÓN
+    ============================ -->
+    <div class="view" id="viewModeracion">
+      <p class="section-title">📋 Publicaciones pendientes de revisión</p>
+      <div id="modList">
+        <div class="empty-state"><div class="ico">⏳</div><p>Cargando...</p></div>
+      </div>
+    </div>
+
+    <!-- ============================
+         TAB: FORO
+    ============================ -->
+    <div class="view" id="viewForo">
+      <p class="section-title">💬 Comunidad docente</p>
+      <div style="background:white;border-radius:var(--radius-xl);padding:20px;border:1.5px solid var(--border);text-align:center">
+        <p style="font-size:1.8rem;margin-bottom:10px">💬</p>
+        <p style="font-family:var(--font-display);font-size:1rem;font-weight:700;margin-bottom:6px">Foro de la comunidad</p>
+        <p style="font-size:.85rem;color:var(--text-2);margin-bottom:16px">Participa en las conversaciones del Café con padres y especialistas.</p>
+        <button class="btn btn-purple" onclick="window.location.href='cafe-foro.html'">Ir al foro del Café →</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <button class="nav-btn active" onclick="switchTab('salon', document.querySelector('.tab-btn'))">
+      <span class="nav-ico">🏫</span><span>Salón</span>
+    </button>
+    <button class="nav-btn" onclick="switchTab('estudiantes', document.querySelectorAll('.tab-btn')[1])">
+      <span class="nav-ico">👥</span><span>Alumnos</span>
+    </button>
+    <button class="nav-btn" onclick="switchTab('moderacion', document.querySelectorAll('.tab-btn')[2])">
+      <span class="nav-ico">✅</span><span>Revisar</span>
+    </button>
+    <button class="nav-btn" onclick="window.location.href='cafe-foro.html'">
+      <span class="nav-ico">💬</span><span>Foro</span>
+    </button>
+  </nav>
+
+  <!-- MODAL: Crear salón -->
+  <div class="modal-overlay" id="createClassModal"
+       onclick="if(event.target===this)this.classList.remove('open')">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <p class="modal-title">🏫 Crear mi salón</p>
+      <p class="modal-sub">Dale un nombre a tu grupo. Se generará un código único para que tus estudiantes se unan.</p>
+      <div class="field-group">
+        <label class="field-label">Nombre del salón</label>
+        <input class="field-input" id="classNameInput" type="text"
+               placeholder="Ej: 3er Grado Sección A" maxlength="50">
+      </div>
+      <button class="btn btn-purple btn-xl" id="btnCreateClass" onclick="createClass()">
+        Crear salón →
+      </button>
+      <button class="btn btn-ghost" style="width:100%;margin-top:6px"
+              onclick="document.getElementById('createClassModal').classList.remove('open')">
+        Cancelar
+      </button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase.js"></script>
+  <script>
+
+    let profile  = null;
+    let myClass  = null;
+
+    /* ============ INIT ============ */
+    async function init() {
+      const { data: { session } } = await sb.auth.getSession();
+      if (!session) { window.location.href = '../index.html'; return; }
+
+      const { data } = await sb.from('profiles').select('*').eq('id', session.user.id).single();
+      if (!data) { window.location.href = '../index.html'; return; }
+      profile = data;
+
+      document.getElementById('hdrTitle').textContent = `Hola, ${data.full_name?.split(' ')[0]} 👋`;
+      document.getElementById('hdrSub').textContent   = data.role === 'specialist' ? 'Especialista' : 'Docente titular';
+
+      await loadClass();
+      hideLoader();
+    }
+
+    /* ============ CARGAR SALÓN ============ */
+    async function loadClass() {
+      const { data } = await sb
+        .from('classes')
+        .select('*')
+        .eq('teacher_id', profile.id)
+        .maybeSingle();
+
+      myClass = data;
+      renderClassSection();
+    }
+
+    function renderClassSection() {
+      const section = document.getElementById('classSection');
+
+      if (!myClass) {
+        section.innerHTML = `
+          <div class="create-class-card">
+            <div class="ico">🏫</div>
+            <h3>Aún no tienes un salón</h3>
+            <p>Crea tu salón para que los estudiantes puedan unirse con un código.</p>
+            <button class="btn btn-purple" onclick="document.getElementById('createClassModal').classList.add('open')">
+              Crear mi salón →
+            </button>
+          </div>`;
+        return;
+      }
+
+      section.innerHTML = `
+        <p class="section-title">🏫 Mi salón</p>
+        <div class="class-card">
+          <div class="class-header">
+            <p class="class-name">${myClass.name}</p>
+            <div class="class-code-badge" onclick="copyCode('${myClass.code}')" title="Toca para copiar">
+              ${myClass.code}
+            </div>
+          </div>
+          <div class="class-stats">
+            <div class="cs-box"><p class="cs-val" id="countStudents">-</p><p class="cs-lbl">Estudiantes</p></div>
+            <div class="cs-box"><p class="cs-val" id="countActivities">-</p><p class="cs-lbl">Actividades</p></div>
+            <div class="cs-box"><p class="cs-val" id="countCreations">-</p><p class="cs-lbl">Creaciones</p></div>
+          </div>
+          <p style="font-size:.78rem;color:var(--text-3);text-align:center;margin-top:10px">
+            📋 Comparte el código <strong>${myClass.code}</strong> con tus estudiantes
+          </p>
+        </div>`;
+
+      loadClassStats();
+    }
+
+    async function loadClassStats() {
+      if (!myClass) return;
+
+      // Estudiantes
+      const { count: stuCount } = await sb
+        .from('class_students')
+        .select('*', { count: 'exact', head: true })
+        .eq('class_id', myClass.id);
+
+      document.getElementById('countStudents').textContent = stuCount || 0;
+
+      // Actividades totales de estudiantes del salón
+      const { data: stuIds } = await sb
+        .from('class_students')
+        .select('student_id')
+        .eq('class_id', myClass.id);
+
+      if (stuIds && stuIds.length > 0) {
+        const ids = stuIds.map(s => s.student_id);
+        const { count: actCount } = await sb
+          .from('activity_log')
+          .select('*', { count: 'exact', head: true })
+          .in('student_id', ids);
+
+        const { count: creCount } = await sb
+          .from('creations')
+          .select('*', { count: 'exact', head: true })
+          .in('student_id', ids);
+
+        document.getElementById('countActivities').textContent = actCount || 0;
+        document.getElementById('countCreations').textContent  = creCount || 0;
+      } else {
+        document.getElementById('countActivities').textContent = 0;
+        document.getElementById('countCreations').textContent  = 0;
+      }
+    }
+
+    function copyCode(code) {
+      navigator.clipboard?.writeText(code).then(() => {
+        showToast(`Código "${code}" copiado 📋`, 'success');
+      }).catch(() => {
+        showToast(`Código del salón: ${code}`, 'info');
+      });
+    }
+
+    /* ============ CREAR SALÓN ============ */
+    async function createClass() {
+      const name = document.getElementById('classNameInput').value.trim();
+      if (!name) { showToast('Escribe un nombre para el salón', 'error'); return; }
+
+      const btn = document.getElementById('btnCreateClass');
+      setButtonLoading(btn, true);
+
+      // Generar código único
+      const code = generateCode();
+
+      const { data, error } = await sb.from('classes').insert({
+        name, code, teacher_id: profile.id,
+      }).select().single();
+
+      setButtonLoading(btn, false);
+      if (error) { showToast('Error al crear el salón', 'error'); return; }
+
+      myClass = data;
+      document.getElementById('createClassModal').classList.remove('open');
+      showToast(`¡Salón "${name}" creado! Código: ${code} 🎉`, 'success', 5000);
+      renderClassSection();
+    }
+
+    function generateCode() {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      return Array.from({length:7}, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+    }
+
+    /* ============ ESTUDIANTES ============ */
+    async function loadStudents() {
+      const list = document.getElementById('studentList');
+      if (!myClass) {
+        list.innerHTML = `<div class="empty-state"><div class="ico">🏫</div><p>Primero crea tu salón</p></div>`;
+        return;
+      }
+
+      const { data } = await sb
+        .from('class_students')
+        .select('students(id, nickname, avatar_emoji, points)')
+        .eq('class_id', myClass.id)
+        .order('joined_at', { ascending: false });
+
+      if (!data || data.length === 0) {
+        list.innerHTML = `<div class="empty-state"><div class="ico">👥</div><p>No hay estudiantes aún.<br>Comparte el código <strong>${myClass?.code}</strong></p></div>`;
+        return;
+      }
+
+      list.innerHTML = '';
+      // Cargar actividades por alumno
+      const ids = data.map(d => d.students.id);
+      const { data: logs } = await sb
+        .from('activity_log')
+        .select('student_id, score')
+        .in('student_id', ids);
+
+      const actCounts = {};
+      logs?.forEach(l => { actCounts[l.student_id] = (actCounts[l.student_id] || 0) + 1; });
+
+      data.forEach(row => {
+        const s   = row.students;
+        const acts = actCounts[s.id] || 0;
+        const item = document.createElement('div');
+        item.className = 'student-item';
+        item.innerHTML = `
+          <span class="stu-avatar">${s.avatar_emoji || '🐻'}</span>
+          <div class="stu-info">
+            <p class="stu-name">${s.nickname}</p>
+            <p class="stu-meta">${acts} actividades completadas</p>
+          </div>
+          <span class="stu-pts">⭐ ${s.points || 0}</span>`;
+        list.appendChild(item);
+      });
+    }
+
+    /* ============ MODERACIÓN ============ */
+    async function loadModeration() {
+      const modList = document.getElementById('modList');
+      modList.innerHTML = '';
+
+      const { data } = await sb
+        .from('creations')
+        .select('*, students(nickname, avatar_emoji)')
+        .eq('approved', false)
+        .order('created_at', { ascending: false })
+        .limit(20);
+
+      if (!data || data.length === 0) {
+        modList.innerHTML = `<div class="empty-state"><div class="ico">✅</div><p style="font-weight:700;color:var(--text)">¡Todo al día!</p><p style="margin-top:4px;font-size:.82rem">No hay publicaciones pendientes de revisión.</p></div>`;
+        return;
+      }
+
+      data.forEach(c => {
+        const card = document.createElement('div');
+        card.className = 'mod-card';
+        card.id = `mod-${c.id}`;
+        const typeLabel = c.type === 'cuento' ? '📖 Cuento' : '💬 Vivencia';
+        card.innerHTML = `
+          <div class="mod-header">
+            <span class="mod-avatar">${c.students?.avatar_emoji || '🐻'}</span>
+            <div>
+              <p class="mod-author">${c.students?.nickname || 'Anónimo'}</p>
+              <p class="mod-type">${typeLabel}</p>
+            </div>
+          </div>
+          ${c.title ? `<p class="mod-title">${c.title}</p>` : ''}
+          <p class="mod-text">${c.content || ''}</p>
+          <div class="mod-actions">
+            <button class="mod-approve" onclick="moderateCreation('${c.id}', true)">✅ Aprobar y publicar</button>
+            <button class="mod-reject"  onclick="moderateCreation('${c.id}', false)">🗑 Rechazar</button>
+          </div>`;
+        modList.appendChild(card);
+      });
+    }
+
+    async function moderateCreation(id, approve) {
+      if (approve) {
+        await sb.from('creations').update({ approved: true }).eq('id', id);
+        showToast('¡Publicación aprobada! ✅', 'success');
+      } else {
+        await sb.from('creations').delete().eq('id', id);
+        showToast('Publicación eliminada 🗑', 'info');
+      }
+      document.getElementById(`mod-${id}`)?.remove();
+
+      const modList = document.getElementById('modList');
+      if (modList.children.length === 0) {
+        modList.innerHTML = `<div class="empty-state"><div class="ico">✅</div><p style="font-weight:700;color:var(--text)">¡Todo al día!</p></div>`;
+      }
+    }
+
+    /* ============ TABS ============ */
+    function switchTab(tab, btn) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn?.classList.add('active');
+
+      const tabs = ['salon','estudiantes','moderacion','foro'];
+      tabs.forEach(t => {
+        const v = document.getElementById(`view${t.charAt(0).toUpperCase()+t.slice(1)}`);
+        if (v) v.classList.toggle('active', t === tab);
+      });
+
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+
+      if (tab === 'estudiantes') loadStudents();
+      if (tab === 'moderacion')  loadModeration();
+    }
+
+    /* ============ LOGOUT ============ */
+    async function logout() {
+      await sb.auth.signOut();
+      window.location.href = '../index.html';
+    }
+
+    init();
+  </script>
+</body>
+</html>

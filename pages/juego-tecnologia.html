@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="theme-color" content="#00BCD4">
+  <title>Tecnología · Storyboard</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    body { background: #E0F7FA; }
+    .hdr {
+      background: linear-gradient(135deg, #00838F, #26C6DA);
+      padding: 16px 20px 20px; position: relative; overflow: hidden;
+    }
+    .hdr::before { content:'💻'; position:absolute; right:-8px; top:-10px; font-size:6rem; opacity:.15; pointer-events:none; }
+    .hdr-top { display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+    .back-btn { width:38px; height:38px; border-radius:12px; background:rgba(255,255,255,.25); border:none; color:white; font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+    .hdr-title { font-family:var(--font-display); font-size:1.3rem; font-weight:800; color:white; }
+    .hdr-sub   { font-size:.8rem; color:rgba(255,255,255,.8); }
+    .game-progress-wrap { background:rgba(255,255,255,.25); border-radius:var(--radius-full); height:10px; overflow:hidden; }
+    .game-progress-bar  { height:100%; background:white; border-radius:var(--radius-full); transition:width .5s cubic-bezier(.16,1,.3,1); }
+    .game-meta { display:flex; justify-content:space-between; margin-top:6px; }
+    .game-meta span { font-size:.78rem; color:rgba(255,255,255,.85); font-weight:600; }
+
+    .game-wrap { padding:24px 16px 60px; max-width:440px; margin:0 auto; }
+
+    .question-card {
+      background: white; border-radius: var(--radius-xl);
+      padding: 28px 20px; text-align: center;
+      margin-bottom: 20px; box-shadow: var(--shadow-md); border: 2px solid #B2EBF2;
+    }
+    .q-category {
+      display: inline-block; background: #E0F7FA; color: #006064;
+      font-size: .75rem; font-weight: 700;
+      padding: 4px 12px; border-radius: var(--radius-full);
+      margin-bottom: 14px; border: 1px solid #B2EBF2;
+    }
+    .q-emoji { font-size: 3.5rem; margin-bottom: 12px; }
+    .q-text {
+      font-family: var(--font-display); font-size: 1.2rem;
+      font-weight: 800; color: var(--text); line-height: 1.3;
+    }
+
+    /* Temporizador lineal */
+    .linear-timer-wrap {
+      background: #E0F7FA; border-radius: var(--radius-full);
+      height: 8px; overflow: hidden; margin: 14px 0 4px;
+    }
+    .linear-timer-bar {
+      height: 100%; background: #00ACC1;
+      border-radius: var(--radius-full);
+      transition: width 1s linear;
+    }
+
+    .options-list { display:flex; flex-direction:column; gap:10px; }
+    .option-btn {
+      padding: 14px 16px; border-radius: var(--radius-lg);
+      background: white; border: 2.5px solid #B2EBF2;
+      font-size: .95rem; font-weight: 600; color: var(--text);
+      text-align: left; cursor: pointer;
+      transition: border-color .15s, transform .1s;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .option-btn .opt-letter {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: #E0F7FA; color: #006064;
+      font-weight: 800; font-size: .85rem;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .option-btn:hover  { border-color: #00BCD4; transform: translateX(3px); }
+    .option-btn.correct{ background:#E8F5E9; border-color:#4CAF50; }
+    .option-btn.correct .opt-letter { background:#C8E6C9; color:#2E7D32; }
+    .option-btn.wrong  { background:#FFEBEE; border-color:#EF5350; }
+    .option-btn.wrong  .opt-letter  { background:#FFCDD2; color:#C62828; }
+    .option-btn.disabled { pointer-events:none; opacity:.6; }
+
+    .fun-fact {
+      background: #E0F7FA; border-radius: var(--radius-md);
+      padding: 12px 14px; font-size: .85rem; color: #006064;
+      margin-top: 12px; display: none; border-left: 3px solid #00BCD4;
+    }
+    .fun-fact.visible { display: block; }
+    .fun-fact strong { display: block; margin-bottom: 3px; font-size: .8rem; color: #00838F; }
+
+    .feedback { text-align:center; font-family:var(--font-display); font-size:1.1rem; font-weight:800; min-height:28px; margin:10px 0; }
+    .feedback.correct { color:#2E7D32; }
+    .feedback.wrong   { color:#C62828; }
+
+    .result-screen { display:none; text-align:center; padding:32px 20px; }
+    .result-screen.active { display:block; }
+    .result-emoji  { font-size:5rem; margin-bottom:12px; animation:popIn .5s cubic-bezier(.16,1,.3,1); }
+    @keyframes popIn { from{transform:scale(0.3);opacity:0}to{transform:scale(1);opacity:1} }
+    .result-title  { font-family:var(--font-display); font-size:2rem; font-weight:800; margin-bottom:6px; }
+    .result-sub    { font-size:1rem; color:var(--text-2); margin-bottom:24px; }
+    .result-pts    { display:inline-block; background:#E0F7FA; color:#006064; font-family:var(--font-display); font-size:1.4rem; font-weight:800; padding:10px 28px; border-radius:var(--radius-full); border:2px solid #B2EBF2; margin-bottom:28px; }
+    .btn-cyan { background:#0097A7; color:white; box-shadow:0 4px 14px rgba(0,151,167,.4); }
+    .result-btns { display:flex; flex-direction:column; gap:10px; max-width:280px; margin:0 auto; }
+  </style>
+</head>
+<body>
+
+  <div id="page-loader">
+    <div style="display:flex;gap:8px;">
+      <div class="loader-dot" style="background:#00BCD4"></div>
+      <div class="loader-dot" style="background:#00BCD4"></div>
+      <div class="loader-dot" style="background:#00BCD4"></div>
+    </div>
+  </div>
+
+  <div class="hdr">
+    <div class="hdr-top">
+      <button class="back-btn" onclick="window.location.href='heladeria.html'">←</button>
+      <div>
+        <p class="hdr-title">Tecnología 💻</p>
+        <p class="hdr-sub">Quiz de alfabetización digital</p>
+      </div>
+    </div>
+    <div class="game-progress-wrap">
+      <div class="game-progress-bar" id="gameProgressBar" style="width:0%"></div>
+    </div>
+    <div class="game-meta">
+      <span id="questionCounter">Pregunta 1 de 10</span>
+      <span id="scoreDisplay">⭐ 0 pts</span>
+    </div>
+  </div>
+
+  <div class="game-wrap">
+    <div id="gameScreen">
+      <div class="question-card">
+        <span class="q-category" id="qCategory">Internet</span>
+        <div class="q-emoji" id="qEmoji">🌐</div>
+        <p class="q-text" id="qText">¿Qué es internet?</p>
+        <div class="linear-timer-wrap">
+          <div class="linear-timer-bar" id="linearTimer" style="width:100%"></div>
+        </div>
+      </div>
+      <div class="options-list" id="optionsList"></div>
+      <div class="fun-fact" id="funFact"><strong>💡 ¿Sabías que...?</strong><span id="funFactText"></span></div>
+      <div class="feedback" id="feedback"></div>
+    </div>
+
+    <div class="result-screen" id="resultScreen">
+      <div class="result-emoji" id="resultEmoji">🤖</div>
+      <p class="result-title" id="resultTitle">¡Experto digital!</p>
+      <p class="result-sub"   id="resultSub">¡Sabes mucho sobre tecnología!</p>
+      <div class="result-pts" id="resultPts">+50 ⭐</div>
+      <div class="result-btns">
+        <button class="btn btn-cyan btn-xl" onclick="initGame()">Jugar de nuevo 🔄</button>
+        <button class="btn btn-outline btn-xl" onclick="window.location.href='heladeria.html'">Volver al inicio 🏠</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase.js"></script>
+  <script>
+    const QUESTIONS = [
+      { cat:'Internet', emoji:'🌐', text:'¿Para qué sirve internet?', options:['Para conectar computadoras y compartir información','Para hacer llamadas telefónicas solamente','Para ver televisión por cable','Para guardar ropa'], correct:0, fact:'Internet conecta millones de computadoras alrededor del mundo. ¡Nació en 1969!' },
+      { cat:'Dispositivos', emoji:'📱', text:'¿Cómo se llama la computadora pequeña que cabe en la palma?', options:['Televisor','Tableta','Teléfono inteligente','Radio'], correct:2, fact:'Los smartphones tienen más potencia que las computadoras que llevaron al hombre a la luna en 1969.' },
+      { cat:'Seguridad', emoji:'🔐', text:'¿Qué NO debes compartir con extraños en internet?', options:['Tu color favorito','Tu nombre y dirección','Tu canción favorita','Tu libro favorito'], correct:1, fact:'Tu información personal es privada. Nunca la compartas con personas que no conoces en la vida real.' },
+      { cat:'Internet', emoji:'📧', text:'¿Qué es un correo electrónico?', options:['Un paquete que llega a tu casa','Un mensaje que se envía por internet','Una llamada por teléfono','Una carta escrita a mano'], correct:1, fact:'El primer correo electrónico fue enviado en 1971. ¡Más de 300 billones de emails se envían cada día!' },
+      { cat:'Dispositivos', emoji:'🖥️', text:'¿Cuál de estos es un dispositivo para introducir texto?', options:['Monitor','Teclado','Parlante','Impresora'], correct:1, fact:'Los teclados modernos tienen entre 101 y 104 teclas. El diseño QWERTY fue creado en 1873.' },
+      { cat:'Conceptos', emoji:'💾', text:'¿Qué es un archivo digital?', options:['Una carpeta física de papel','Información guardada en una computadora','Un tipo de impresora','Una conexión a internet'], correct:1, fact:'Tu foto favorita en el teléfono es un archivo digital. ¡Ocupa millones de pequeños puntos llamados píxeles!' },
+      { cat:'Seguridad', emoji:'🛡️', text:'¿Qué hace un antivirus?', options:['Protege la computadora de programas dañinos','Acelera internet','Imprime documentos','Reproduce música'], correct:0, fact:'Los virus informáticos son programas maliciosos. El primer virus conocido fue creado en 1971.' },
+      { cat:'Internet', emoji:'🔍', text:'¿Para qué sirve un buscador como Google?', options:['Para hacer videollamadas','Para encontrar información en internet','Para guardar fotos','Para escribir documentos'], correct:1, fact:'Google procesa más de 8.500 millones de búsquedas cada día en todo el mundo.' },
+      { cat:'Conceptos', emoji:'☁️', text:'¿Qué es "la nube" en tecnología?', options:['El cielo donde viven los datos','Servidores que guardan tu información en internet','Un programa para ver películas','Un tipo de pantalla'], correct:1, fact:'La nube es simplemente una red de servidores (computadoras potentes) conectados a internet.' },
+      { cat:'Dispositivos', emoji:'🖨️', text:'¿Qué hace una impresora?', options:['Escanea documentos','Envía correos','Copia imágenes digitales en papel','Toma fotografías'], correct:2, fact:'La primera impresora de computadora fue creada en 1953. ¡Podía imprimir 600 líneas por minuto!' },
+      { cat:'Conceptos', emoji:'📶', text:'¿Qué significa WiFi?', options:['Wired Fidelity','Wireless Fidelity','World Internet','Web File'], correct:1, fact:'WiFi permite conectarse a internet sin cables. ¡El WiFi más rápido puede transmitir una película en segundos!' },
+      { cat:'Seguridad', emoji:'🔑', text:'¿Cómo debe ser una buena contraseña?', options:['Tu nombre y apellido','Tu fecha de nacimiento','Letras, números y símbolos mezclados','Solo números fáciles'], correct:2, fact:'Una contraseña segura de 12 caracteres mixtos tardaría miles de años en ser descifrada.' },
+    ];
+
+    let state = {};
+
+    function initGame() {
+      const qs = [...QUESTIONS].sort(() => Math.random() - .5).slice(0, 10);
+      state = { qs, current: 0, score: 0, correct: 0, answered: false, timerInterval: null };
+      document.getElementById('gameScreen').style.display = 'block';
+      document.getElementById('resultScreen').classList.remove('active');
+      renderQuestion();
+    }
+
+    function renderQuestion() {
+      const { qs, current } = state;
+      const q = qs[current];
+
+      document.getElementById('gameProgressBar').style.width = (current / qs.length * 100) + '%';
+      document.getElementById('questionCounter').textContent  = `Pregunta ${current + 1} de ${qs.length}`;
+      document.getElementById('scoreDisplay').textContent     = `⭐ ${state.score} pts`;
+      document.getElementById('qCategory').textContent        = q.cat;
+      document.getElementById('qEmoji').textContent           = q.emoji;
+      document.getElementById('qText').textContent            = q.text;
+      document.getElementById('feedback').textContent         = '';
+      document.getElementById('feedback').className           = 'feedback';
+      document.getElementById('funFact').classList.remove('visible');
+      state.answered = false;
+
+      const list = document.getElementById('optionsList');
+      list.innerHTML = '';
+      const letters = ['A','B','C','D'];
+      q.options.forEach((opt, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerHTML = `<span class="opt-letter">${letters[i]}</span>${opt}`;
+        btn.onclick = () => answer(i === q.correct, btn, q.options[q.correct], q.fact);
+        list.appendChild(btn);
+      });
+
+      startLinearTimer();
+    }
+
+    function startLinearTimer() {
+      clearInterval(state.timerInterval);
+      const bar = document.getElementById('linearTimer');
+      bar.style.transition = 'none';
+      bar.style.width = '100%';
+      bar.style.background = '#00ACC1';
+      let secs = 15;
+
+      requestAnimationFrame(() => {
+        bar.style.transition = `width ${secs}s linear`;
+        bar.style.width = '0%';
+      });
+
+      state.timerInterval = setInterval(() => {
+        secs--;
+        if (secs <= 4) bar.style.background = '#EF5350';
+        if (secs <= 0) { clearInterval(state.timerInterval); if (!state.answered) timeOut(); }
+      }, 1000);
+    }
+
+    function timeOut() {
+      state.answered = true;
+      const q = state.qs[state.current];
+      document.querySelectorAll('.option-btn').forEach((b, i) => {
+        b.classList.add('disabled');
+        if (i === q.correct) b.classList.add('correct');
+      });
+      document.getElementById('feedback').textContent = `⏰ Tiempo. Era: "${q.options[q.correct]}"`;
+      document.getElementById('feedback').className   = 'feedback wrong';
+      showFact(q.fact);
+      setTimeout(nextQuestion, 2200);
+    }
+
+    function answer(isOk, btn, correctText, fact) {
+      if (state.answered) return;
+      state.answered = true;
+      clearInterval(state.timerInterval);
+
+      document.querySelectorAll('.option-btn').forEach(b => {
+        b.classList.add('disabled');
+        if (b.textContent.includes(correctText)) b.classList.add('correct');
+      });
+      if (!isOk) btn.classList.add('wrong');
+
+      const pts = isOk ? 10 : 0;
+      if (isOk) { state.score += pts; state.correct++; }
+      const fb = document.getElementById('feedback');
+      fb.textContent = isOk ? `¡Correcto! +${pts} ⭐` : `Era: "${correctText}" 😅`;
+      fb.className   = `feedback ${isOk ? 'correct' : 'wrong'}`;
+      document.getElementById('scoreDisplay').textContent = `⭐ ${state.score} pts`;
+      showFact(fact);
+      setTimeout(nextQuestion, 2200);
+    }
+
+    function showFact(fact) {
+      document.getElementById('funFactText').textContent = fact;
+      document.getElementById('funFact').classList.add('visible');
+    }
+
+    function nextQuestion() {
+      state.current++;
+      if (state.current < state.qs.length) renderQuestion();
+      else endGame();
+    }
+
+    async function endGame() {
+      document.getElementById('gameProgressBar').style.width = '100%';
+      document.getElementById('gameScreen').style.display = 'none';
+      const pct = state.correct / state.qs.length;
+      let emoji, title, sub;
+      if (pct >= .8)      { emoji='🤖'; title='¡Experto digital!';   sub='¡Tienes un gran conocimiento tecnológico!'; }
+      else if (pct >= .6) { emoji='💻'; title='¡Muy bien!';          sub=`Respondiste ${state.correct} de ${state.qs.length} correctas.`; }
+      else                { emoji='📱'; title='¡Sigue aprendiendo!'; sub='La tecnología es fascinante. ¡No te rindas!'; }
+
+      document.getElementById('resultEmoji').textContent = emoji;
+      document.getElementById('resultTitle').textContent = title;
+      document.getElementById('resultSub').textContent   = sub;
+      document.getElementById('resultPts').textContent   = `+${state.score} ⭐`;
+      document.getElementById('resultScreen').classList.add('active');
+
+      const kid = getKidSession();
+      if (kid && state.score > 0) {
+        await sb.from('activity_log').insert({ student_id: kid.id, module: 'tecnologia', activity: 'Quiz digital', score: state.score, completed: pct >= .5 });
+        await sb.from('students').update({ points: (kid.points || 0) + state.score }).eq('id', kid.id);
+        kid.points = (kid.points || 0) + state.score;
+        saveKidSession(kid);
+      }
+    }
+
+    (async () => {
+      const kid = getKidSession();
+      if (!kid) { window.location.href = '../index.html'; return; }
+      hideLoader();
+      initGame();
+    })();
+  </script>
+</body>
+</html>

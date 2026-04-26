@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="theme-color" content="#9C27B0">
+  <title>Espacio Creativo · Storyboard</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    body { background: var(--creativo-light); }
+
+    .hdr {
+      background: linear-gradient(135deg, #6A1B9A, #AB47BC);
+      padding: 16px 20px 20px; position: relative; overflow: hidden;
+    }
+    .hdr::before { content:'✏️'; position:absolute; right:-8px; top:-10px; font-size:6rem; opacity:.15; pointer-events:none; }
+    .hdr-top { display:flex; align-items:center; gap:12px; }
+    .back-btn { width:38px; height:38px; border-radius:12px; background:rgba(255,255,255,.25); border:none; color:white; font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+    .hdr-title { font-family:var(--font-display); font-size:1.3rem; font-weight:800; color:white; }
+    .hdr-sub   { font-size:.8rem; color:rgba(255,255,255,.8); }
+
+    .content { padding:20px 16px 80px; max-width:480px; margin:0 auto; }
+
+    /* ——— TABS ——— */
+    .tabs {
+      display:flex; gap:8px; background:white;
+      border-radius:var(--radius-lg); padding:5px;
+      margin-bottom:20px; border:1.5px solid var(--creativo-soft);
+    }
+    .tab { flex:1; padding:10px; border-radius:var(--radius-md); font-size:.85rem; font-weight:700; color:var(--text-2); transition:background .2s, color .2s; }
+    .tab.active { background:var(--creativo); color:white; box-shadow:0 3px 10px rgba(123,104,238,.3); }
+
+    .view { display:none; }
+    .view.active { display:block; }
+
+    /* ——— VISTA: ESCRIBIR CUENTO ——— */
+    .editor-card {
+      background:white; border-radius:var(--radius-xl);
+      padding:20px; margin-bottom:16px;
+      border:2px solid var(--creativo-soft); box-shadow:var(--shadow-sm);
+    }
+
+    .editor-label { font-family:var(--font-display); font-size:1rem; font-weight:700; color:var(--creativo-dark); margin-bottom:10px; display:flex; align-items:center; gap:6px; }
+
+    .editor-field {
+      width:100%; border:2px solid var(--creativo-soft); border-radius:var(--radius-md);
+      padding:12px 14px; font-family:var(--font-body); font-size:1rem;
+      color:var(--text); background:var(--creativo-light);
+      resize:none; transition:border-color .2s;
+    }
+    .editor-field:focus { border-color:var(--creativo); outline:none; box-shadow:0 0 0 3px rgba(123,104,238,.1); }
+    .editor-field::placeholder { color:var(--text-3); }
+
+    /* Starters de historia */
+    .starters { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px; }
+    .starter-chip {
+      background:var(--creativo-light); color:var(--creativo-dark);
+      border:1.5px solid var(--creativo-soft); border-radius:var(--radius-full);
+      padding:5px 12px; font-size:.8rem; font-weight:600; cursor:pointer;
+      transition:background .15s;
+    }
+    .starter-chip:hover { background:var(--creativo-soft); }
+
+    /* Selector de personaje */
+    .character-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:12px; }
+    .char-btn {
+      aspect-ratio:1; border-radius:var(--radius-md);
+      background:var(--creativo-light); border:2px solid var(--creativo-soft);
+      font-size:1.5rem; cursor:pointer; display:flex; align-items:center; justify-content:center;
+      transition:border-color .15s, transform .1s;
+    }
+    .char-btn:hover  { border-color:var(--creativo); transform:scale(1.05); }
+    .char-btn.sel    { border-color:var(--creativo); background:var(--creativo-soft); }
+
+    .char-count { font-size:.75rem; color:var(--text-3); text-align:right; margin-top:4px; }
+
+    .btn-purple { background:var(--creativo); color:white; box-shadow:0 4px 14px rgba(123,104,238,.4); }
+
+    /* ——— VISTA: MIS VIVENCIAS ——— */
+    .vivencia-card {
+      background:white; border-radius:var(--radius-xl);
+      padding:20px; margin-bottom:16px;
+      border:2px solid var(--creativo-soft); box-shadow:var(--shadow-sm);
+    }
+    .mood-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin-bottom:14px; }
+    .mood-btn {
+      aspect-ratio:1; border-radius:var(--radius-md);
+      background:var(--creativo-light); border:2px solid var(--creativo-soft);
+      font-size:1.6rem; cursor:pointer; display:flex; flex-direction:column;
+      align-items:center; justify-content:center; gap:2px;
+      transition:border-color .15s, transform .1s;
+    }
+    .mood-btn span { font-size:.55rem; color:var(--text-2); font-weight:600; }
+    .mood-btn:hover { border-color:var(--creativo); transform:scale(1.05); }
+    .mood-btn.sel   { border-color:var(--creativo); background:var(--creativo-soft); }
+
+    /* ——— VISTA: CUENTOS PUBLICADOS ——— */
+    .published-list { display:flex; flex-direction:column; gap:12px; }
+    .pub-card {
+      background:white; border-radius:var(--radius-lg);
+      padding:16px; border:1.5px solid var(--creativo-soft);
+      box-shadow:var(--shadow-sm);
+    }
+    .pub-header { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+    .pub-avatar { font-size:1.4rem; width:36px; height:36px; border-radius:10px; background:var(--creativo-light); display:flex; align-items:center; justify-content:center; }
+    .pub-author { font-size:.85rem; font-weight:700; color:var(--text); }
+    .pub-date   { font-size:.72rem; color:var(--text-3); }
+    .pub-char   { font-size:1.1rem; }
+    .pub-title  { font-family:var(--font-display); font-size:1rem; font-weight:800; color:var(--creativo-dark); margin-bottom:4px; }
+    .pub-text   { font-size:.88rem; color:var(--text-2); line-height:1.5; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+    .pub-footer { display:flex; align-items:center; gap:8px; margin-top:10px; }
+    .like-btn {
+      display:inline-flex; align-items:center; gap:4px;
+      background:var(--creativo-light); border:1.5px solid var(--creativo-soft);
+      border-radius:var(--radius-full); padding:4px 12px;
+      font-size:.8rem; font-weight:700; color:var(--creativo-dark); cursor:pointer;
+      transition:background .15s;
+    }
+    .like-btn:hover { background:var(--creativo-soft); }
+    .pub-type-badge { font-size:.7rem; background:var(--creativo-light); color:var(--creativo-dark); padding:3px 10px; border-radius:var(--radius-full); font-weight:600; }
+
+    /* Modal éxito */
+    .success-overlay { position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:200; display:flex; align-items:center; justify-content:center; opacity:0; visibility:hidden; transition:opacity .25s, visibility .25s; padding:20px; }
+    .success-overlay.open { opacity:1; visibility:visible; }
+    .success-box { background:white; border-radius:var(--radius-xl); padding:32px 24px; text-align:center; max-width:320px; width:100%; animation:popIn .4s cubic-bezier(.16,1,.3,1); }
+    @keyframes popIn { from{transform:scale(0.7);opacity:0}to{transform:scale(1);opacity:1} }
+    .success-box h3 { font-family:var(--font-display); font-size:1.4rem; font-weight:800; margin:12px 0 6px; }
+    .success-box p  { font-size:.9rem; color:var(--text-2); margin-bottom:20px; }
+
+    /* Bottom nav */
+    .bottom-nav { position:fixed; bottom:0; left:0; right:0; background:white; border-top:1.5px solid var(--border); display:flex; padding:10px 0 calc(10px + env(safe-area-inset-bottom)); z-index:100; }
+    .nav-btn { flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:6px 4px; font-size:.65rem; font-weight:700; color:var(--text-3); cursor:pointer; }
+    .nav-btn .nav-ico { font-size:1.4rem; }
+    .nav-btn.active { color:var(--creativo-dark); }
+  </style>
+</head>
+<body>
+
+  <div id="page-loader">
+    <div style="display:flex;gap:8px;">
+      <div class="loader-dot" style="background:var(--creativo)"></div>
+      <div class="loader-dot" style="background:var(--creativo)"></div>
+      <div class="loader-dot" style="background:var(--creativo)"></div>
+    </div>
+  </div>
+
+  <div class="hdr">
+    <div class="hdr-top">
+      <button class="back-btn" onclick="window.location.href='heladeria.html'">←</button>
+      <div>
+        <p class="hdr-title">Espacio Creativo ✏️</p>
+        <p class="hdr-sub">Escribe, comparte y crea</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" id="tabCuento"   onclick="switchTab('cuento')">📖 Cuento</button>
+      <button class="tab"        id="tabVivencia" onclick="switchTab('vivencia')">💬 Vivencia</button>
+      <button class="tab"        id="tabVer"      onclick="switchTab('ver')">🌟 Ver todos</button>
+    </div>
+
+    <!-- ============================
+         VISTA: ESCRIBIR CUENTO
+    ============================ -->
+    <div class="view active" id="viewCuento">
+      <div class="editor-card">
+        <p class="editor-label">🌟 ¿Quién es tu personaje?</p>
+        <div class="character-grid" id="characterGrid"></div>
+      </div>
+
+      <div class="editor-card">
+        <p class="editor-label">✏️ Título de tu cuento</p>
+        <input class="editor-field" id="storyTitleInput" type="text"
+               maxlength="60" placeholder="Ej: La aventura del dragón azul">
+      </div>
+
+      <div class="editor-card">
+        <p class="editor-label">📝 ¿Cómo comienza tu historia?</p>
+        <p style="font-size:.8rem;color:var(--text-2);margin-bottom:8px">Toca para usar una frase de inicio:</p>
+        <div class="starters" id="startersWrap"></div>
+        <textarea class="editor-field" id="storyBodyInput" rows="7"
+                  maxlength="1000"
+                  placeholder="Había una vez..."
+                  oninput="updateCount()"></textarea>
+        <p class="char-count"><span id="charCount">0</span>/1000 caracteres</p>
+      </div>
+
+      <button class="btn btn-purple btn-xl" id="btnPublishStory" onclick="publishCreation('cuento')">
+        ¡Publicar mi cuento! 🚀
+      </button>
+    </div>
+
+    <!-- ============================
+         VISTA: MI VIVENCIA
+    ============================ -->
+    <div class="view" id="viewVivencia">
+      <div class="vivencia-card">
+        <p class="editor-label">😊 ¿Cómo te sientes hoy?</p>
+        <div class="mood-grid" id="moodGrid"></div>
+      </div>
+
+      <div class="vivencia-card">
+        <p class="editor-label">🗣️ Cuéntanos algo que pasó</p>
+        <div class="starters" id="vivStartersWrap"></div>
+        <textarea class="editor-field" id="vivBodyInput" rows="5"
+                  maxlength="600"
+                  placeholder="Hoy en la escuela..."
+                  oninput="updateVivCount()"></textarea>
+        <p class="char-count"><span id="vivCharCount">0</span>/600 caracteres</p>
+      </div>
+
+      <button class="btn btn-purple btn-xl" id="btnPublishViv" onclick="publishCreation('vivencia')">
+        ¡Compartir mi vivencia! 💬
+      </button>
+    </div>
+
+    <!-- ============================
+         VISTA: VER PUBLICACIONES
+    ============================ -->
+    <div class="view" id="viewVer">
+      <div id="publishedList" class="published-list">
+        <div style="text-align:center;padding:40px 0;color:var(--text-3)">
+          <p style="font-size:2rem">✏️</p>
+          <p style="font-size:.9rem;margin-top:8px">Cargando creaciones...</p>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+
+  <!-- Nav inferior -->
+  <nav class="bottom-nav">
+    <button class="nav-btn" onclick="window.location.href='heladeria.html'">
+      <span class="nav-ico">🏠</span><span>Inicio</span>
+    </button>
+    <button class="nav-btn active">
+      <span class="nav-ico">✏️</span><span>Crear</span>
+    </button>
+    <button class="nav-btn" onclick="switchTab('ver')">
+      <span class="nav-ico">🌟</span><span>Ver todo</span>
+    </button>
+  </nav>
+
+  <!-- Modal éxito -->
+  <div class="success-overlay" id="successOverlay">
+    <div class="success-box">
+      <div style="font-size:4rem" id="successEmoji">🎉</div>
+      <h3 id="successTitle">¡Publicado!</h3>
+      <p id="successMsg">Tu creación ya está visible para tus compañeros.</p>
+      <button class="btn btn-purple" onclick="closeSuccess()">¡Genial! ✨</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase.js"></script>
+  <script>
+
+    let kid = null;
+    let selectedChar = '🐻';
+    let selectedMood = '😊';
+
+    const CHARACTERS = ['🐻','🦊','🐸','🦁','🐧','🐙','🦄','🐲'];
+    const MOODS = [
+      { emoji:'😊', label:'Feliz'  },
+      { emoji:'😎', label:'Cool'   },
+      { emoji:'🤔', label:'Pensando' },
+      { emoji:'😴', label:'Cansado' },
+      { emoji:'🤩', label:'Emocionado' },
+    ];
+
+    const STORY_STARTERS = [
+      'Había una vez...', 'En un lugar muy lejano...', 'Un día, de repente...',
+      'Nadie sospechaba que...', 'El monstruo más amigable del mundo...',
+    ];
+    const VIV_STARTERS = [
+      'Hoy aprendí que...', 'Me sorprendió cuando...', 'Lo más divertido fue...',
+      'Hoy me sentí muy...', 'En mi casa pasó algo curioso...',
+    ];
+
+    /* ============ TABS ============ */
+    function switchTab(tab) {
+      ['cuento','vivencia','ver'].forEach(t => {
+        document.getElementById(`tab${t.charAt(0).toUpperCase()+t.slice(1)}`).classList.toggle('active', t===tab);
+        document.getElementById(`view${t.charAt(0).toUpperCase()+t.slice(1)}`).classList.toggle('active', t===tab);
+      });
+      if (tab === 'ver') loadPublished();
+    }
+
+    /* ============ BUILD UI ============ */
+    function buildUI() {
+      // Personajes
+      const cg = document.getElementById('characterGrid');
+      CHARACTERS.forEach(c => {
+        const btn = document.createElement('button');
+        btn.className = 'char-btn' + (c === selectedChar ? ' sel' : '');
+        btn.textContent = c;
+        btn.onclick = () => {
+          selectedChar = c;
+          document.querySelectorAll('.char-btn').forEach(b => b.classList.toggle('sel', b.textContent === c));
+        };
+        cg.appendChild(btn);
+      });
+
+      // Starters cuento
+      const sw = document.getElementById('startersWrap');
+      STORY_STARTERS.forEach(s => {
+        const chip = document.createElement('button');
+        chip.className = 'starter-chip';
+        chip.textContent = s;
+        chip.onclick = () => {
+          const ta = document.getElementById('storyBodyInput');
+          ta.value = s + ' ';
+          ta.focus();
+          updateCount();
+        };
+        sw.appendChild(chip);
+      });
+
+      // Moods
+      const mg = document.getElementById('moodGrid');
+      MOODS.forEach(m => {
+        const btn = document.createElement('button');
+        btn.className = 'mood-btn' + (m.emoji === selectedMood ? ' sel' : '');
+        btn.innerHTML = `${m.emoji}<span>${m.label}</span>`;
+        btn.onclick = () => {
+          selectedMood = m.emoji;
+          document.querySelectorAll('.mood-btn').forEach(b => b.classList.toggle('sel', b.textContent.includes(m.label)));
+        };
+        mg.appendChild(btn);
+      });
+
+      // Starters vivencia
+      const vsw = document.getElementById('vivStartersWrap');
+      VIV_STARTERS.forEach(s => {
+        const chip = document.createElement('button');
+        chip.className = 'starter-chip';
+        chip.textContent = s;
+        chip.onclick = () => {
+          const ta = document.getElementById('vivBodyInput');
+          ta.value = s + ' ';
+          ta.focus();
+          updateVivCount();
+        };
+        vsw.appendChild(chip);
+      });
+    }
+
+    function updateCount() {
+      const len = document.getElementById('storyBodyInput').value.length;
+      document.getElementById('charCount').textContent = len;
+    }
+    function updateVivCount() {
+      const len = document.getElementById('vivBodyInput').value.length;
+      document.getElementById('vivCharCount').textContent = len;
+    }
+
+    /* ============ PUBLICAR ============ */
+    async function publishCreation(type) {
+      let title, content;
+
+      if (type === 'cuento') {
+        title   = document.getElementById('storyTitleInput').value.trim();
+        content = document.getElementById('storyBodyInput').value.trim();
+        if (!title)   { showToast('Escribe un título para tu cuento', 'error'); return; }
+        if (content.length < 20) { showToast('Escribe un poco más tu cuento (mínimo 20 caracteres)', 'error'); return; }
+      } else {
+        title   = `Vivencia de ${kid.nickname} ${selectedMood}`;
+        content = document.getElementById('vivBodyInput').value.trim();
+        if (content.length < 10) { showToast('Cuéntanos un poco más (mínimo 10 caracteres)', 'error'); return; }
+      }
+
+      const btnId = type === 'cuento' ? 'btnPublishStory' : 'btnPublishViv';
+      const btn   = document.getElementById(btnId);
+      setButtonLoading(btn, true);
+
+      const { error } = await sb.from('creations').insert({
+        student_id: kid.id,
+        type,
+        title,
+        content: (type === 'cuento' ? `${selectedChar} ` : `${selectedMood} `) + content,
+        approved: false,
+      });
+
+      setButtonLoading(btn, false);
+
+      if (error) { showToast('Error al publicar. Intenta de nuevo.', 'error'); return; }
+
+      // Puntos por crear
+      const pts = type === 'cuento' ? 20 : 10;
+      await sb.from('students').update({ points: (kid.points || 0) + pts }).eq('id', kid.id);
+      kid.points = (kid.points || 0) + pts;
+      saveKidSession(kid);
+
+      if (type === 'cuento') {
+        document.getElementById('storyTitleInput').value = '';
+        document.getElementById('storyBodyInput').value  = '';
+        updateCount();
+      } else {
+        document.getElementById('vivBodyInput').value = '';
+        updateVivCount();
+      }
+
+      document.getElementById('successEmoji').textContent = type === 'cuento' ? '📚' : '💬';
+      document.getElementById('successTitle').textContent = type === 'cuento' ? '¡Cuento publicado!' : '¡Vivencia compartida!';
+      document.getElementById('successMsg').textContent   = `+${pts} ⭐ ganados. Tu profe la revisará antes de que aparezca.`;
+      document.getElementById('successOverlay').classList.add('open');
+    }
+
+    function closeSuccess() {
+      document.getElementById('successOverlay').classList.remove('open');
+    }
+
+    /* ============ CARGAR PUBLICACIONES ============ */
+    async function loadPublished() {
+      const list = document.getElementById('publishedList');
+      list.innerHTML = '<div style="text-align:center;padding:30px 0;color:var(--text-3)"><p>Cargando...</p></div>';
+
+      const { data, error } = await sb
+        .from('creations')
+        .select('*, students(nickname, avatar_emoji)')
+        .eq('approved', true)
+        .order('created_at', { ascending: false })
+        .limit(20);
+
+      if (error || !data || data.length === 0) {
+        list.innerHTML = `<div style="text-align:center;padding:40px 0;color:var(--text-3)">
+          <p style="font-size:2.5rem">✏️</p>
+          <p style="font-size:.95rem;margin-top:10px;font-weight:700;color:var(--text)">Todavía no hay publicaciones</p>
+          <p style="font-size:.8rem;margin-top:4px">¡Sé el primero en compartir tu cuento!</p>
+        </div>`;
+        return;
+      }
+
+      list.innerHTML = '';
+      data.forEach(c => {
+        const card = document.createElement('div');
+        card.className = 'pub-card';
+        const isViv = c.type === 'vivencia';
+        const date  = new Date(c.created_at).toLocaleDateString('es', { day:'numeric', month:'short' });
+        card.innerHTML = `
+          <div class="pub-header">
+            <div class="pub-avatar">${c.students?.avatar_emoji || '🐻'}</div>
+            <div>
+              <p class="pub-author">${c.students?.nickname || 'Anónimo'}</p>
+              <p class="pub-date">${date}</p>
+            </div>
+            <span class="pub-type-badge" style="margin-left:auto">${isViv ? '💬 Vivencia' : '📖 Cuento'}</span>
+          </div>
+          ${!isViv ? `<p class="pub-title">${c.title || 'Sin título'}</p>` : ''}
+          <p class="pub-text">${c.content || ''}</p>
+          <div class="pub-footer">
+            <button class="like-btn" onclick="this.textContent='❤️ ¡Me gustó!'">
+              🤍 Me gusta
+            </button>
+          </div>
+        `;
+        list.appendChild(card);
+      });
+    }
+
+    /* ============ INIT ============ */
+    (async () => {
+      kid = getKidSession();
+      if (!kid) { window.location.href = '../index.html'; return; }
+      buildUI();
+      hideLoader();
+    })();
+  </script>
+</body>
+</html>

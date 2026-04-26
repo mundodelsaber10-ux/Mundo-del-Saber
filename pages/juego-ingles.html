@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="theme-color" content="#2196F3">
+  <title>Inglés · Storyboard</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    body { background: #E3F2FD; }
+
+    .hdr {
+      background: linear-gradient(135deg, #1976D2, #42A5F5);
+      padding: 16px 20px 20px;
+      position: relative; overflow: hidden;
+    }
+    .hdr::before {
+      content: '🌎';
+      position: absolute; right: -8px; top: -10px;
+      font-size: 6rem; opacity: .15; pointer-events: none;
+    }
+    .hdr-top { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .back-btn {
+      width: 38px; height: 38px; border-radius: 12px;
+      background: rgba(255,255,255,.25); border: none;
+      color: white; font-size: 1.1rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .hdr-title { font-family: var(--font-display); font-size: 1.3rem; font-weight: 800; color: white; }
+    .hdr-sub   { font-size: .8rem; color: rgba(255,255,255,.8); }
+    .game-progress-wrap { background: rgba(255,255,255,.25); border-radius: var(--radius-full); height: 10px; overflow: hidden; }
+    .game-progress-bar  { height: 100%; background: white; border-radius: var(--radius-full); transition: width .5s cubic-bezier(.16,1,.3,1); }
+    .game-meta { display: flex; justify-content: space-between; margin-top: 6px; }
+    .game-meta span { font-size: .78rem; color: rgba(255,255,255,.85); font-weight: 600; }
+
+    /* ——— ZONA DE JUEGO ——— */
+    .game-wrap { padding: 24px 20px 48px; max-width: 420px; margin: 0 auto; }
+
+    /* Modos de juego */
+    .mode-tabs {
+      display: flex; gap: 8px;
+      background: white; border-radius: var(--radius-lg);
+      padding: 5px; margin-bottom: 20px;
+      border: 1.5px solid #BBDEFB;
+    }
+    .mode-tab {
+      flex: 1; padding: 8px; border-radius: var(--radius-md);
+      font-size: .8rem; font-weight: 700; color: var(--text-2);
+      transition: background .2s, color .2s;
+    }
+    .mode-tab.active { background: #1976D2; color: white; }
+
+    /* Tarjeta de palabra */
+    .word-card {
+      background: white;
+      border-radius: var(--radius-xl);
+      padding: 28px 20px;
+      text-align: center;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow-md);
+      border: 2px solid #BBDEFB;
+    }
+
+    .word-emoji { font-size: 4.5rem; margin-bottom: 10px; line-height: 1; }
+
+    .word-english {
+      font-family: var(--font-display);
+      font-size: 2.2rem; font-weight: 800;
+      color: #1565C0; letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+    .word-phonetic { font-size: .85rem; color: var(--text-2); margin-bottom: 12px; }
+
+    .speak-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #E3F2FD; color: #1565C0;
+      border: 1.5px solid #BBDEFB;
+      border-radius: var(--radius-full);
+      padding: 7px 18px; font-size: .85rem; font-weight: 700;
+      cursor: pointer; transition: background .15s;
+    }
+    .speak-btn:hover { background: #BBDEFB; }
+    .speak-btn.speaking { background: #1976D2; color: white; border-color: #1976D2; }
+
+    /* Modo: elegir la traducción */
+    .options-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 12px; margin-bottom: 16px;
+    }
+    .option-btn {
+      padding: 16px 10px; border-radius: var(--radius-lg);
+      font-family: var(--font-body); font-size: 1rem; font-weight: 700;
+      background: white; border: 2.5px solid #BBDEFB;
+      color: var(--text); cursor: pointer;
+      transition: transform .15s, border-color .15s;
+      line-height: 1.2; text-align: center;
+    }
+    .option-btn:hover  { border-color: #1976D2; transform: scale(1.03); }
+    .option-btn:active { transform: scale(.96); }
+    .option-btn.correct { background: #E8F5E9; border-color: #4CAF50; color: #2E7D32; animation: bounce .4s; }
+    .option-btn.wrong   { background: #FFEBEE; border-color: #EF5350; color: #C62828; animation: shake .35s; }
+    .option-btn.disabled { pointer-events: none; opacity: .55; }
+
+    @keyframes bounce { 0%{transform:scale(1)}40%{transform:scale(1.1)}100%{transform:scale(1)} }
+    @keyframes shake  { 0%,100%{transform:translateX(0)}25%,75%{transform:translateX(-5px)}50%{transform:translateX(5px)} }
+
+    /* Modo: escribe la palabra */
+    .type-wrap { margin-bottom: 16px; }
+    .type-hint { font-size: .85rem; color: var(--text-2); text-align: center; margin-bottom: 8px; }
+    .letter-slots {
+      display: flex; justify-content: center; gap: 8px;
+      margin-bottom: 16px; flex-wrap: wrap;
+    }
+    .letter-slot {
+      width: 44px; height: 52px;
+      border-radius: var(--radius-md);
+      border: 2.5px solid #BBDEFB;
+      background: white;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-display);
+      font-size: 1.4rem; font-weight: 800;
+      color: #1565C0; transition: border-color .2s;
+    }
+    .letter-slot.filled { border-color: #1976D2; background: #E3F2FD; }
+    .letter-slot.correct { border-color: #4CAF50; background: #E8F5E9; color: #2E7D32; }
+    .letter-slot.wrong   { border-color: #EF5350; background: #FFEBEE; color: #C62828; }
+
+    .letter-pool {
+      display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;
+    }
+    .pool-letter {
+      width: 44px; height: 44px; border-radius: var(--radius-md);
+      background: #1976D2; color: white;
+      font-family: var(--font-display); font-size: 1.2rem; font-weight: 800;
+      cursor: pointer; border: none;
+      transition: transform .1s, opacity .15s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .pool-letter:hover  { transform: scale(1.1); }
+    .pool-letter:active { transform: scale(.92); }
+    .pool-letter.used   { opacity: .25; pointer-events: none; }
+
+    /* Feedback */
+    .feedback {
+      text-align: center; font-family: var(--font-display);
+      font-size: 1.1rem; font-weight: 800; min-height: 28px;
+    }
+    .feedback.correct { color: #2E7D32; }
+    .feedback.wrong   { color: #C62828; }
+
+    /* Resultado */
+    .result-screen { display: none; text-align: center; padding: 32px 20px; }
+    .result-screen.active { display: block; }
+    .result-emoji  { font-size: 5rem; margin-bottom: 12px; animation: popIn .5s cubic-bezier(.16,1,.3,1); }
+    @keyframes popIn { from{transform:scale(0.3);opacity:0}to{transform:scale(1);opacity:1} }
+    .result-title  { font-family: var(--font-display); font-size: 2rem; font-weight: 800; margin-bottom: 6px; }
+    .result-sub    { font-size: 1rem; color: var(--text-2); margin-bottom: 24px; }
+    .result-pts    { display: inline-block; background: #E3F2FD; color: #1565C0; font-family: var(--font-display); font-size: 1.4rem; font-weight: 800; padding: 10px 28px; border-radius: var(--radius-full); border: 2px solid #BBDEFB; margin-bottom: 28px; }
+    .result-vocab  { background: white; border-radius: var(--radius-lg); padding: 16px; margin-bottom: 28px; border: 1.5px solid #BBDEFB; }
+    .vocab-row     { display: flex; align-items: center; gap: 10px; padding: 6px 0; border-bottom: 1px solid #E3F2FD; font-size: .9rem; }
+    .vocab-row:last-child { border-bottom: none; }
+    .vocab-emoji   { font-size: 1.4rem; }
+    .vocab-en      { font-weight: 700; color: #1565C0; flex: 1; }
+    .vocab-es      { color: var(--text-2); }
+    .btn-azul { background: #1976D2; color: white; box-shadow: 0 4px 14px rgba(25,118,210,.4); }
+    .result-btns { display: flex; flex-direction: column; gap: 10px; max-width: 280px; margin: 0 auto; }
+  </style>
+</head>
+<body>
+
+  <div id="page-loader">
+    <div style="display:flex;gap:8px;">
+      <div class="loader-dot" style="background:#2196F3"></div>
+      <div class="loader-dot" style="background:#2196F3"></div>
+      <div class="loader-dot" style="background:#2196F3"></div>
+    </div>
+  </div>
+
+  <div class="hdr">
+    <div class="hdr-top">
+      <button class="back-btn" onclick="confirmExit()">←</button>
+      <div>
+        <p class="hdr-title">Inglés 🌎</p>
+        <p class="hdr-sub" id="modeLabel">Modo: Elige la traducción</p>
+      </div>
+    </div>
+    <div class="game-progress-wrap">
+      <div class="game-progress-bar" id="gameProgressBar" style="width:0%"></div>
+    </div>
+    <div class="game-meta">
+      <span id="questionCounter">Palabra 1 de 8</span>
+      <span id="scoreDisplay">⭐ 0 pts</span>
+    </div>
+  </div>
+
+  <div class="game-wrap">
+
+    <!-- Tabs de modo -->
+    <div class="mode-tabs">
+      <button class="mode-tab active" id="tabChoose" onclick="setMode('choose')">🎯 Elegir</button>
+      <button class="mode-tab"        id="tabSpell"  onclick="setMode('spell')">✏️ Deletrear</button>
+    </div>
+
+    <!-- Pantalla de juego -->
+    <div id="gameScreen">
+      <div class="word-card">
+        <div class="word-emoji" id="wordEmoji">🐶</div>
+        <p class="word-english"  id="wordEnglish">DOG</p>
+        <p class="word-phonetic" id="wordPhonetic">/dɒɡ/</p>
+        <button class="speak-btn" id="speakBtn" onclick="speak()">🔊 Escuchar</button>
+      </div>
+
+      <!-- Modo elegir -->
+      <div id="modeChoose">
+        <div class="options-grid" id="optionsGrid"></div>
+      </div>
+
+      <!-- Modo deletrear -->
+      <div id="modeSpell" style="display:none">
+        <div class="type-wrap">
+          <p class="type-hint">Ordena las letras para escribir la palabra en inglés</p>
+          <div class="letter-slots" id="letterSlots"></div>
+          <div class="letter-pool"  id="letterPool"></div>
+          <button class="btn btn-outline" style="width:auto;margin:0 auto;display:block;padding:8px 20px;font-size:.85rem"
+                  onclick="clearSpelling()">🗑 Borrar</button>
+        </div>
+      </div>
+
+      <div class="feedback" id="feedback"></div>
+    </div>
+
+    <!-- Resultado -->
+    <div class="result-screen" id="resultScreen">
+      <div class="result-emoji" id="resultEmoji">🌟</div>
+      <p class="result-title" id="resultTitle">¡Great job!</p>
+      <p class="result-sub"   id="resultSub">Aprendiste palabras nuevas</p>
+      <div class="result-pts" id="resultPts">+40 ⭐</div>
+
+      <p style="font-family:var(--font-display);font-size:.95rem;font-weight:700;margin-bottom:10px;color:#1565C0">
+        📚 Palabras de hoy
+      </p>
+      <div class="result-vocab" id="resultVocab"></div>
+
+      <div class="result-btns">
+        <button class="btn btn-azul btn-xl" onclick="restartGame()">Jugar de nuevo 🔄</button>
+        <button class="btn btn-outline btn-xl" onclick="window.location.href='heladeria.html'">Volver al inicio 🏠</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase.js"></script>
+  <script>
+
+    /* ====================================================
+       VOCABULARIO BASE (expandible)
+    ==================================================== */
+    const VOCAB = [
+      { en:'DOG',      es:'Perro',     emoji:'🐶', ph:'/dɒɡ/' },
+      { en:'CAT',      es:'Gato',      emoji:'🐱', ph:'/kæt/' },
+      { en:'APPLE',    es:'Manzana',   emoji:'🍎', ph:'/ˈæp.əl/' },
+      { en:'HOUSE',    es:'Casa',      emoji:'🏠', ph:'/haʊs/' },
+      { en:'TREE',     es:'Árbol',     emoji:'🌳', ph:'/triː/' },
+      { en:'SUN',      es:'Sol',       emoji:'☀️', ph:'/sʌn/' },
+      { en:'FISH',     es:'Pez',       emoji:'🐟', ph:'/fɪʃ/' },
+      { en:'BOOK',     es:'Libro',     emoji:'📚', ph:'/bʊk/' },
+      { en:'BIRD',     es:'Pájaro',    emoji:'🐦', ph:'/bɜːd/' },
+      { en:'FLOWER',   es:'Flor',      emoji:'🌸', ph:'/ˈflaʊ.ər/' },
+      { en:'WATER',    es:'Agua',      emoji:'💧', ph:'/ˈwɔː.tər/' },
+      { en:'BREAD',    es:'Pan',       emoji:'🍞', ph:'/bred/' },
+      { en:'MOON',     es:'Luna',      emoji:'🌙', ph:'/muːn/' },
+      { en:'STAR',     es:'Estrella',  emoji:'⭐', ph:'/stɑːr/' },
+      { en:'RAIN',     es:'Lluvia',    emoji:'🌧', ph:'/reɪn/' },
+      { en:'BALL',     es:'Pelota',    emoji:'⚽', ph:'/bɔːl/' },
+    ];
+
+    /* ====================================================
+       ESTADO
+    ==================================================== */
+    let mode = 'choose';
+    let state = {};
+
+    function setMode(m) {
+      mode = m;
+      document.getElementById('tabChoose').classList.toggle('active', m === 'choose');
+      document.getElementById('tabSpell').classList.toggle('active', m === 'spell');
+      document.getElementById('modeLabel').textContent = m === 'choose'
+        ? 'Modo: Elige la traducción' : 'Modo: Deletrear';
+      initGame();
+    }
+
+    function shuffle(arr) { return [...arr].sort(() => Math.random() - .5); }
+
+    function initGame() {
+      const words = shuffle(VOCAB).slice(0, 8);
+      state = {
+        words, current: 0, score: 0,
+        correct: 0, answered: false,
+        spelling: [], usedIdxs: [],
+      };
+      document.getElementById('gameScreen').style.display = 'block';
+      document.getElementById('resultScreen').classList.remove('active');
+      renderWord();
+    }
+
+    /* ====================================================
+       RENDERIZAR PALABRA
+    ==================================================== */
+    function renderWord() {
+      const { words, current } = state;
+      const w = words[current];
+
+      document.getElementById('gameProgressBar').style.width   = (current / words.length * 100) + '%';
+      document.getElementById('questionCounter').textContent    = `Palabra ${current + 1} de ${words.length}`;
+      document.getElementById('scoreDisplay').textContent       = `⭐ ${state.score} pts`;
+      document.getElementById('wordEmoji').textContent          = w.emoji;
+      document.getElementById('wordEnglish').textContent        = w.en;
+      document.getElementById('wordPhonetic').textContent       = w.ph;
+      document.getElementById('feedback').textContent           = '';
+      document.getElementById('feedback').className             = 'feedback';
+      state.answered = false;
+
+      if (mode === 'choose') {
+        document.getElementById('modeChoose').style.display = 'block';
+        document.getElementById('modeSpell').style.display  = 'none';
+        renderChooseOptions(w);
+      } else {
+        document.getElementById('modeChoose').style.display = 'none';
+        document.getElementById('modeSpell').style.display  = 'block';
+        renderSpellMode(w);
+      }
+    }
+
+    /* ====================================================
+       MODO: ELEGIR
+    ==================================================== */
+    function renderChooseOptions(w) {
+      const wrong3 = shuffle(VOCAB.filter(v => v.en !== w.en)).slice(0, 3);
+      const opts   = shuffle([w, ...wrong3]);
+      const grid   = document.getElementById('optionsGrid');
+      grid.innerHTML = '';
+      opts.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerHTML = `${opt.emoji}<br>${opt.es}`;
+        btn.onclick = () => answerChoose(opt.es === w.es, btn, w.es);
+        grid.appendChild(btn);
+      });
+    }
+
+    function answerChoose(isOk, btn, correctEs) {
+      if (state.answered) return;
+      state.answered = true;
+
+      document.querySelectorAll('.option-btn').forEach(b => {
+        b.classList.add('disabled');
+        if (b.innerHTML.includes(correctEs)) b.classList.add('correct');
+      });
+
+      if (!isOk) btn.classList.add('wrong');
+
+      const pts = isOk ? 10 : 0;
+      if (isOk) { state.score += pts; state.correct++; }
+      showFeedback(isOk, isOk ? `¡Correcto! +${pts} ⭐` : `Era: ${correctEs} 😅`);
+      document.getElementById('scoreDisplay').textContent = `⭐ ${state.score} pts`;
+      setTimeout(nextWord, 1500);
+    }
+
+    /* ====================================================
+       MODO: DELETREAR
+    ==================================================== */
+    function renderSpellMode(w) {
+      state.spelling  = new Array(w.en.length).fill(null);
+      state.usedIdxs  = [];
+
+      // Slots
+      const slots = document.getElementById('letterSlots');
+      slots.innerHTML = '';
+      w.en.split('').forEach((_, i) => {
+        const sl = document.createElement('div');
+        sl.className = 'letter-slot';
+        sl.id = `slot-${i}`;
+        sl.textContent = '_';
+        slots.appendChild(sl);
+      });
+
+      // Pool de letras (palabra + 2-3 letras trampa)
+      const extraLetters = 'AEIOURSNLT';
+      let pool = w.en.split('');
+      while (pool.length < w.en.length + 3) {
+        pool.push(extraLetters[Math.floor(Math.random() * extraLetters.length)]);
+      }
+      pool = shuffle(pool);
+
+      const poolEl = document.getElementById('letterPool');
+      poolEl.innerHTML = '';
+      pool.forEach((letter, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'pool-letter';
+        btn.textContent = letter;
+        btn.dataset.idx = idx;
+        btn.onclick = () => addLetter(letter, idx, w);
+        poolEl.appendChild(btn);
+      });
+    }
+
+    function addLetter(letter, poolIdx, w) {
+      if (state.answered) return;
+      const nextEmpty = state.spelling.findIndex(s => s === null);
+      if (nextEmpty === -1) return;
+
+      state.spelling[nextEmpty] = { letter, poolIdx };
+      state.usedIdxs.push(poolIdx);
+      document.getElementById(`slot-${nextEmpty}`).textContent = letter;
+      document.getElementById(`slot-${nextEmpty}`).classList.add('filled');
+      document.querySelector(`.pool-letter[data-idx="${poolIdx}"]`).classList.add('used');
+
+      // Auto-check cuando están todos llenos
+      if (state.spelling.every(s => s !== null)) {
+        setTimeout(() => checkSpelling(w), 300);
+      }
+    }
+
+    function clearSpelling() {
+      if (state.answered) return;
+      const w = state.words[state.current];
+      state.spelling  = new Array(w.en.length).fill(null);
+      state.usedIdxs  = [];
+      document.querySelectorAll('.letter-slot').forEach(s => {
+        s.textContent = '_'; s.classList.remove('filled','correct','wrong');
+      });
+      document.querySelectorAll('.pool-letter').forEach(b => b.classList.remove('used'));
+    }
+
+    function checkSpelling(w) {
+      const typed = state.spelling.map(s => s.letter).join('');
+      const isOk  = typed === w.en;
+      state.answered = true;
+
+      document.querySelectorAll('.letter-slot').forEach((sl, i) => {
+        sl.classList.remove('filled');
+        sl.classList.add(typed[i] === w.en[i] ? 'correct' : 'wrong');
+      });
+
+      const pts = isOk ? 15 : 0;
+      if (isOk) { state.score += pts; state.correct++; }
+      showFeedback(isOk, isOk ? `¡Perfecto! +${pts} ⭐` : `Era: ${w.en} 😅`);
+      document.getElementById('scoreDisplay').textContent = `⭐ ${state.score} pts`;
+      setTimeout(nextWord, 1800);
+    }
+
+    /* ====================================================
+       AUDIO (Web Speech API)
+    ==================================================== */
+    function speak() {
+      const w   = state.words[state.current];
+      const btn = document.getElementById('speakBtn');
+      if (!window.speechSynthesis) return;
+
+      const utt  = new SpeechSynthesisUtterance(w.en.toLowerCase());
+      utt.lang   = 'en-US';
+      utt.rate   = 0.85;
+      btn.classList.add('speaking');
+      utt.onend  = () => btn.classList.remove('speaking');
+      window.speechSynthesis.speak(utt);
+    }
+
+    function showFeedback(ok, msg) {
+      const el = document.getElementById('feedback');
+      el.textContent = msg;
+      el.className   = `feedback ${ok ? 'correct' : 'wrong'}`;
+    }
+
+    /* ====================================================
+       SIGUIENTE / FIN
+    ==================================================== */
+    function nextWord() {
+      state.current++;
+      if (state.current < state.words.length) {
+        renderWord();
+      } else {
+        endGame();
+      }
+    }
+
+    async function endGame() {
+      document.getElementById('gameProgressBar').style.width = '100%';
+      const pct = state.correct / state.words.length;
+      let emoji, title, sub;
+
+      if (pct >= .875)    { emoji='🌟'; title='Great job!';    sub='¡Eres un experto en inglés!'; }
+      else if (pct >= .6) { emoji='👏'; title='Well done!';    sub=`Aprendiste ${state.correct} palabras correctas.`; }
+      else                { emoji='💪'; title='Keep going!';   sub='Sigue practicando, ya casi lo tienes.'; }
+
+      document.getElementById('resultEmoji').textContent = emoji;
+      document.getElementById('resultTitle').textContent = title;
+      document.getElementById('resultSub').textContent   = sub;
+      document.getElementById('resultPts').textContent   = `+${state.score} ⭐`;
+
+      // Mostrar vocabulario aprendido
+      const vocabEl = document.getElementById('resultVocab');
+      vocabEl.innerHTML = '';
+      state.words.forEach(w => {
+        const row = document.createElement('div');
+        row.className = 'vocab-row';
+        row.innerHTML = `<span class="vocab-emoji">${w.emoji}</span><span class="vocab-en">${w.en}</span><span class="vocab-es">${w.es}</span>`;
+        vocabEl.appendChild(row);
+      });
+
+      document.getElementById('gameScreen').style.display = 'none';
+      document.getElementById('resultScreen').classList.add('active');
+
+      // Guardar en Supabase
+      const kid = getKidSession();
+      if (kid && state.score > 0) {
+        await sb.from('activity_log').insert({
+          student_id: kid.id, module: 'ingles',
+          activity: `Vocabulario (${mode})`, score: state.score, completed: pct >= .5,
+        });
+        await sb.from('students').update({ points: (kid.points || 0) + state.score }).eq('id', kid.id);
+        kid.points = (kid.points || 0) + state.score;
+        saveKidSession(kid);
+      }
+    }
+
+    function restartGame() { initGame(); }
+
+    function confirmExit() {
+      if (state.current > 0 && !confirm('¿Salir? Perderás el progreso.')) return;
+      window.location.href = 'heladeria.html';
+    }
+
+    /* ====================================================
+       ARRANQUE
+    ==================================================== */
+    (async () => {
+      const kid = getKidSession();
+      if (!kid) { window.location.href = '../index.html'; return; }
+      hideLoader();
+      initGame();
+    })();
+  </script>
+</body>
+</html>

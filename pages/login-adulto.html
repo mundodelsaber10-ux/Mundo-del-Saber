@@ -61,8 +61,6 @@
     body.rol-docente .field-input:focus{ border-color: var(--creativo); box-shadow: 0 0 0 3px rgba(123,104,238,.12); }
     body.rol-padre  .btn-zone { background: var(--cafe);    color: white; box-shadow: 0 4px 14px rgba(232,146,42,.35); }
     body.rol-docente .btn-zone{ background: var(--creativo); color: white; box-shadow: 0 4px 14px rgba(123,104,238,.35); }
-    #codigoWrap { display: none; }
-    body.rol-docente #codigoWrap { display: block; }
     .forgot-link { text-align: center; font-size: .85rem; color: var(--text-2); margin-top: 12px; cursor: pointer; text-decoration: underline; }
     .info-box { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius-md); padding: 14px 16px; font-size: .85rem; color: var(--text-2); margin-top: 20px; display: flex; gap: 10px; align-items: flex-start; }
     .info-box .ico { font-size: 1.2rem; flex-shrink: 0; }
@@ -130,13 +128,7 @@
           <button class="pwd-toggle" onclick="togglePwd('regPwd',this)">👁</button>
         </div>
       </div>
-      <div id="codigoWrap">
-        <div class="field-group">
-          <label class="field-label">Código institucional</label>
-          <input class="field-input" id="regCodigo" type="text" placeholder="Ej: ESCUELA2024" autocomplete="off" style="text-transform:uppercase;letter-spacing:2px">
-          <span class="field-error" id="codigoError">Código incorrecto</span>
-        </div>
-      </div>
+
       <button class="btn btn-zone btn-xl" id="btnReg" onclick="handleRegister()">Crear mi cuenta →</button>
       <div class="info-box">
         <span class="ico">ℹ️</span>
@@ -148,7 +140,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/supabase.js"></script>
   <script>
-    const CODIGO_INSTITUCIONAL = 'STORYBOARD2024';
     const params = new URLSearchParams(location.search);
     const rol    = params.get('rol') || 'padre';
 
@@ -176,7 +167,7 @@
         document.getElementById('zoneTitle').textContent = 'Acceso docente';
         document.getElementById('zoneTitle').classList.add('creativo-title');
         document.getElementById('zoneSub').textContent = 'Gestiona tu aula y contenido';
-        document.getElementById('infoBoxText').textContent = 'Necesitas el código institucional que te proporcionó la dirección de la escuela para registrarte como docente o especialista.';
+        document.getElementById('infoBoxText').textContent = 'Al registrarte recibirás un correo de confirmación. Una vez confirmado, podrás gestionar tu salón y publicar contenido para los estudiantes.';
       }
       const grid = document.getElementById('subroleGrid');
       SUBROLES[rol].forEach(sr => {
@@ -214,16 +205,42 @@
       if (!email || !pwd) { showToast('Completa todos los campos','error'); return; }
       const btn = document.getElementById('btnLogin');
       setButtonLoading(btn, true);
-      const { error } = await sb.auth.signInWithPassword({ email, password: pwd });
+
+      const { data, error } = await sb.auth.signInWithPassword({ email, password: pwd });
+
       if (error) {
-        if (error.message.includes('Email not confirmed')) {
-          showToast('Confirma tu correo antes de entrar 📧', 'error', 5000);
+        const msg = error.message || '';
+        if (msg.includes('Email not confirmed')) {
+          showToast('Tu correo no está confirmado. Ve a Supabase → Authentication → Users y confirma tu usuario manualmente.', 'error', 8000);
+        } else if (msg.includes('Invalid login credentials') || error.status === 400) {
+          showToast('Correo o contraseña incorrectos. ¿Ya confirmaste tu cuenta?', 'error', 5000);
         } else {
-          showToast('Correo o contraseña incorrectos', 'error');
+          showToast('Error al iniciar sesión: ' + msg, 'error', 5000);
         }
         setButtonLoading(btn, false);
         return;
       }
+
+      // Verificar que el perfil existe (lo crea el trigger, pero por si acaso)
+      if (data.user) {
+        const { data: profile, error: pErr } = await sb
+          .from('profiles')
+          .select('id, role')
+          .eq('id', data.user.id)
+          .maybeSingle();
+
+        if (!profile && !pErr) {
+          // Trigger no corrió (ej: usuario creado antes del trigger) — crear perfil ahora
+          const meta = data.user.user_metadata || {};
+          await sb.from('profiles').upsert({
+            id:        data.user.id,
+            full_name: meta.full_name || email.split('@')[0],
+            role:      meta.role || 'parent',
+            email:     data.user.email,
+          });
+        }
+      }
+
       await redirectByRole();
     }
 
@@ -233,14 +250,7 @@
       const pwd   = document.getElementById('regPwd').value;
       if (!name||!email||!pwd) { showToast('Completa todos los campos','error'); return; }
       if (pwd.length < 6) { showToast('La contraseña debe tener al menos 6 caracteres','error'); return; }
-      if (rol === 'docente') {
-        const codigo = document.getElementById('regCodigo').value.trim().toUpperCase();
-        if (codigo !== CODIGO_INSTITUCIONAL) {
-          document.getElementById('codigoError').classList.add('visible');
-          showToast('Código institucional incorrecto','error'); return;
-        }
-        document.getElementById('codigoError').classList.remove('visible');
-      }
+
       const btn = document.getElementById('btnReg');
       setButtonLoading(btn, true);
 

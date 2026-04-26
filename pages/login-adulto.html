@@ -215,7 +215,15 @@
       const btn = document.getElementById('btnLogin');
       setButtonLoading(btn, true);
       const { error } = await sb.auth.signInWithPassword({ email, password: pwd });
-      if (error) { showToast('Correo o contraseña incorrectos','error'); setButtonLoading(btn,false); return; }
+      if (error) {
+        if (error.message.includes('Email not confirmed')) {
+          showToast('Confirma tu correo antes de entrar 📧', 'error', 5000);
+        } else {
+          showToast('Correo o contraseña incorrectos', 'error');
+        }
+        setButtonLoading(btn, false);
+        return;
+      }
       await redirectByRole();
     }
 
@@ -235,13 +243,40 @@
       }
       const btn = document.getElementById('btnReg');
       setButtonLoading(btn, true);
-      const { data, error } = await sb.auth.signUp({ email, password: pwd, options: { data: { full_name: name, role: selectedSubrole } } });
-      if (error) { showToast(error.message,'error'); setButtonLoading(btn,false); return; }
-      if (data.user) {
-        await sb.from('profiles').insert({ id: data.user.id, full_name: name, role: selectedSubrole, email });
+
+      const { data, error } = await sb.auth.signUp({
+        email,
+        password: pwd,
+        options: {
+          data: { full_name: name, role: selectedSubrole }
+        }
+      });
+
+      if (error) {
+        // Mensaje de error amigable en español
+        const msgs = {
+          'User already registered': 'Ya existe una cuenta con ese correo. Usa "Iniciar sesión".',
+          'Password should be at least 6 characters': 'La contraseña debe tener al menos 6 caracteres.',
+          'Unable to validate email address: invalid format': 'El formato del correo no es válido.',
+        };
+        showToast(msgs[error.message] || error.message, 'error');
+        setButtonLoading(btn, false);
+        return;
       }
-      showToast('¡Cuenta creada! Revisa tu correo para confirmarla 📧','success',5000);
-      setTimeout(() => switchTab('login'), 2000);
+
+      // El trigger en Supabase crea el perfil automáticamente.
+      // Si la confirmación de email está DESACTIVADA, la sesión ya está activa
+      // y podemos redirigir. Si está ACTIVADA, pedimos que revisen el correo.
+      if (data.session) {
+        // Email confirm desactivado → sesión activa de inmediato
+        showToast(`¡Bienvenido/a, ${name}! 🎉`, 'success');
+        setTimeout(() => redirectByRole(), 800);
+      } else {
+        // Email confirm activado → pedir confirmación
+        showToast('¡Cuenta creada! Revisa tu correo y confirma antes de entrar 📧', 'success', 6000);
+        setTimeout(() => switchTab('login'), 2500);
+      }
+
       setButtonLoading(btn, false);
     }
 

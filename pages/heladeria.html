@@ -444,6 +444,17 @@
 
     </div>
 
+    <!-- Mis Aulas -->
+    <p class="section-title">🏫 Mis aulas</p>
+    <div id="aulasSection" style="margin-bottom:28px">
+      <div id="aulasList" style="display:flex;flex-direction:column;gap:10px"></div>
+      <button id="btnJoinAula" onclick="document.getElementById('codigoModal').classList.add('open')"
+              style="width:100%;padding:12px;border-radius:var(--radius-lg);border:2px dashed var(--heladeria-soft);background:white;font-size:.88rem;font-weight:700;color:var(--heladeria-dark);cursor:pointer;margin-top:8px;transition:background .15s"
+              onmouseover="this.style.background='var(--heladeria-light)'" onmouseout="this.style.background='white'">
+        ➕ Unirme a un aula
+      </button>
+    </div>
+
     <!-- Retos del día -->
     <p class="section-title">🎯 Retos de hoy</p>
     <div class="retos-list" id="retosList">
@@ -718,8 +729,44 @@
       window.location.href = '../index.html';
     }
 
+    /* ============ AULAS DEL ALUMNO ============ */
+    async function loadAulas() {
+      const k = getKidSession();
+      if (!k) return;
+      const list = document.getElementById('aulasList');
+      const { data } = await sb
+        .from('classroom_students')
+        .select('classrooms(id, name, subject, color, code)')
+        .eq('student_id', k.id);
+      if (!data || data.length === 0) {
+        list.innerHTML = '<p style="font-size:.82rem;color:var(--text-3);text-align:center;padding:8px 0">Aún no estás en ningún aula. Usa el código de tu profesor para unirte.</p>';
+        return;
+      }
+      list.innerHTML = '';
+      data.forEach(row => {
+        const cls = row.classrooms;
+        if (!cls) return;
+        const card = document.createElement('button');
+        card.style.cssText = `width:100%;padding:14px 16px;border-radius:16px;border:2px solid ${cls.color}55;background:linear-gradient(135deg,${cls.color}15,${cls.color}25);display:flex;align-items:center;gap:12px;cursor:pointer;text-align:left;transition:transform .15s,box-shadow .15s`;
+        card.onmouseover = () => { card.style.transform='translateY(-2px)'; card.style.boxShadow='0 4px 12px rgba(0,0,0,.1)'; };
+        card.onmouseout  = () => { card.style.transform=''; card.style.boxShadow=''; };
+        card.innerHTML = `
+          <div style="width:42px;height:42px;border-radius:12px;background:${cls.color};display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0">🏫</div>
+          <div style="flex:1">
+            <p style="font-family:'Baloo 2',cursive;font-size:.95rem;font-weight:800;color:var(--text)">${esc(cls.name)}</p>
+            <p style="font-size:.75rem;color:var(--text-2);margin-top:2px">${esc(cls.subject||'General')}</p>
+          </div>
+          <span style="font-size:1rem;color:var(--text-3)">→</span>`;
+        card.onclick = () => window.location.href = `aula-alumno.html?id=${cls.id}`;
+        list.appendChild(card);
+      });
+    }
+
+    function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
     /* ============ ARRANQUE ============ */
     init();
+    loadAulas();
   </script>
 </body>
 </html>

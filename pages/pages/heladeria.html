@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="../favicon.ico">
+  <link rel="apple-touch-icon" href="../favicon.ico">
+  <meta name="theme-color" content="#0EB882">
+  <title>La Heladería · Storyboard</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    body {
+      background: var(--heladeria-light);
+      min-height: 100dvh;
+    }
+
+    /* ——— HEADER ——— */
+    .hdr {
+      background: var(--heladeria);
+      padding: 16px 20px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hdr::before {
+      content: '🍦';
+      position: absolute;
+      right: -10px; top: -16px;
+      font-size: 7rem;
+      opacity: .15;
+      pointer-events: none;
+      transform: rotate(15deg);
+    }
+    .hdr-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .hdr-greeting {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: white;
+      line-height: 1.1;
+    }
+    .hdr-sub {
+      font-size: .85rem;
+      color: rgba(255,255,255,.8);
+      margin-top: 2px;
+    }
+    .avatar-badge {
+      width: 48px; height: 48px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.25);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem;
+      border: 2px solid rgba(255,255,255,.4);
+      flex-shrink: 0;
+    }
+
+    /* Barra de puntos */
+    .points-bar {
+      background: rgba(255,255,255,.2);
+      border-radius: var(--radius-full);
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .points-icon { font-size: 1.1rem; }
+    .points-label { font-size: .8rem; color: rgba(255,255,255,.9); font-weight: 600; }
+    .points-val {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: white;
+      margin-left: auto;
+    }
+    .points-progress-wrap {
+      flex: 1;
+      height: 8px;
+      background: rgba(255,255,255,.25);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+    .points-progress-bar {
+      height: 100%;
+      background: white;
+      border-radius: var(--radius-full);
+      transition: width .8s cubic-bezier(.16,1,.3,1);
+    }
+
+    /* ——— CONTENIDO ——— */
+    .content {
+      padding: 20px 16px 80px;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--heladeria-dark);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* ——— GRID DE MATERIAS ——— */
+    .subjects-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .subject-card {
+      border-radius: var(--radius-xl);
+      padding: 18px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      cursor: pointer;
+      border: 2.5px solid transparent;
+      transition: transform .2s cubic-bezier(.16,1,.3,1), box-shadow .2s;
+      position: relative;
+      overflow: hidden;
+      text-align: left;
+      min-height: 130px;
+    }
+    .subject-card::after {
+      content: attr(data-emoji);
+      position: absolute;
+      right: -8px; bottom: -8px;
+      font-size: 3.2rem;
+      opacity: .18;
+      pointer-events: none;
+    }
+    .subject-card:hover  { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+    .subject-card:active { transform: scale(.97); }
+
+    .subject-card.matematica { background: #FFF3E0; border-color: #FFCC80; }
+    .subject-card.ingles     { background: #E3F2FD; border-color: #90CAF9; }
+    .subject-card.lectura    { background: #FCE4EC; border-color: #F48FB1; }
+    .subject-card.arte       { background: #F3E5F5; border-color: #CE93D8; }
+    .subject-card.deporte    { background: #E8F5E9; border-color: #A5D6A7; }
+    .subject-card.tecnologia { background: #E0F7FA; border-color: #80DEEA; }
+
+    .subject-icon {
+      width: 42px; height: 42px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+    }
+    .matematica .subject-icon { background: #FFE0B2; }
+    .ingles     .subject-icon { background: #BBDEFB; }
+    .lectura    .subject-icon { background: #F8BBD0; }
+    .arte       .subject-icon { background: #E1BEE7; }
+    .deporte    .subject-icon { background: #C8E6C9; }
+    .tecnologia .subject-icon { background: #B2EBF2; }
+
+    .subject-name {
+      font-family: var(--font-display);
+      font-size: .95rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .subject-desc { font-size: .75rem; color: var(--text-2); }
+
+    /* Mini barra de progreso por materia */
+    .subject-progress {
+      height: 5px;
+      background: rgba(0,0,0,.08);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+      margin-top: auto;
+    }
+    .subject-progress-fill {
+      height: 100%;
+      border-radius: var(--radius-full);
+      transition: width .8s cubic-bezier(.16,1,.3,1);
+    }
+    .matematica .subject-progress-fill { background: #FF9800; }
+    .ingles     .subject-progress-fill { background: #2196F3; }
+    .lectura    .subject-progress-fill { background: #E91E63; }
+    .arte       .subject-progress-fill { background: #9C27B0; }
+    .deporte    .subject-progress-fill { background: #4CAF50; }
+    .tecnologia .subject-progress-fill { background: #00BCD4; }
+
+    /* ——— RETOS DEL DÍA ——— */
+    .retos-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+
+    .reto-card {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border: 1.5px solid var(--border);
+      cursor: pointer;
+      transition: transform .15s, box-shadow .15s;
+    }
+    .reto-card:hover  { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .reto-card:active { transform: scale(.98); }
+
+    .reto-badge {
+      width: 40px; height: 40px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+      background: var(--heladeria-light);
+    }
+    .reto-info { flex: 1; }
+    .reto-name { font-size: .9rem; font-weight: 700; color: var(--text); }
+    .reto-meta { font-size: .75rem; color: var(--text-2); margin-top: 2px; }
+    .reto-pts {
+      font-family: var(--font-display);
+      font-size: .85rem;
+      font-weight: 800;
+      color: var(--heladeria-dark);
+      background: var(--heladeria-light);
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      flex-shrink: 0;
+    }
+    .reto-card.done { opacity: .55; }
+    .reto-card.done .reto-pts {
+      background: var(--border);
+      color: var(--text-3);
+    }
+
+    /* ——— NAV BOTTOM ——— */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: var(--surface);
+      border-top: 1.5px solid var(--border);
+      display: flex;
+      padding: 10px 0 calc(10px + env(safe-area-inset-bottom));
+      z-index: 100;
+    }
+    .nav-btn {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      padding: 6px 4px;
+      font-size: .65rem;
+      font-weight: 700;
+      color: var(--text-3);
+      transition: color .15s;
+      cursor: pointer;
+    }
+    .nav-btn .nav-ico { font-size: 1.4rem; line-height: 1; }
+    .nav-btn.active { color: var(--heladeria-dark); }
+
+    /* ——— MODAL CÓDIGO SALÓN ——— */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.45);
+      z-index: 200;
+      display: flex; align-items: flex-end; justify-content: center;
+      opacity: 0; visibility: hidden;
+      transition: opacity .25s, visibility .25s;
+    }
+    .modal-overlay.open { opacity: 1; visibility: visible; }
+
+    .modal-sheet {
+      background: var(--surface);
+      border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+      padding: 24px 20px calc(32px + env(safe-area-inset-bottom));
+      width: 100%; max-width: 480px;
+      transform: translateY(100%);
+      transition: transform .35s cubic-bezier(.16,1,.3,1);
+    }
+    .modal-overlay.open .modal-sheet { transform: translateY(0); }
+
+    .modal-handle {
+      width: 40px; height: 4px;
+      background: var(--border);
+      border-radius: var(--radius-full);
+      margin: 0 auto 20px;
+    }
+    .modal-title {
+      font-family: var(--font-display);
+      font-size: 1.3rem; font-weight: 800;
+      color: var(--text); margin-bottom: 4px;
+    }
+    .modal-sub { font-size: .9rem; color: var(--text-2); margin-bottom: 20px; }
+
+    .code-input {
+      width: 100%;
+      padding: 16px;
+      font-size: 1.4rem;
+      font-family: var(--font-display);
+      font-weight: 800;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      text-align: center;
+      border: 2.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: var(--heladeria-light);
+      color: var(--heladeria-dark);
+      margin-bottom: 14px;
+    }
+    .code-input:focus { border-color: var(--heladeria); outline: none; }
+  </style>
+</head>
+<body>
+
+  <div id="page-loader">
+    <div style="display:flex;gap:8px;">
+      <div class="loader-dot" style="background:var(--heladeria)"></div>
+      <div class="loader-dot" style="background:var(--heladeria)"></div>
+      <div class="loader-dot" style="background:var(--heladeria)"></div>
+    </div>
+  </div>
+
+  <!-- ——— HEADER ——— -->
+  <div class="hdr">
+    <div class="hdr-top">
+      <div>
+        <p class="hdr-greeting" id="greeting">¡Hola, Explorador! 👋</p>
+        <p class="hdr-sub">¿Qué aprenderemos hoy?</p>
+      </div>
+      <button class="avatar-badge" id="avatarBtn"
+              onclick="document.getElementById('profileModal').classList.add('open')"
+              aria-label="Mi perfil">
+        🐻
+      </button>
+    </div>
+
+    <!-- Puntos / nivel -->
+    <div class="points-bar">
+      <span class="points-icon">⭐</span>
+      <span class="points-label">Estrellas</span>
+      <div class="points-progress-wrap">
+        <div class="points-progress-bar" id="pointsBar" style="width:0%"></div>
+      </div>
+      <span class="points-val" id="pointsVal">0</span>
+    </div>
+  </div>
+
+  <!-- ——— CONTENIDO ——— -->
+  <div class="content">
+
+    <!-- Materias -->
+    <p class="section-title">🍦 Mis materias</p>
+    <div class="subjects-grid">
+
+      <button class="subject-card matematica slide-up delay-1"
+              data-emoji="🔢"
+              onclick="goToGame('matematica')"
+              aria-label="Ir a Matemáticas">
+        <div class="subject-icon">🔢</div>
+        <div>
+          <p class="subject-name">Matemáticas</p>
+          <p class="subject-desc">Juegos y retos numéricos</p>
+        </div>
+        <div class="subject-progress">
+          <div class="subject-progress-fill" id="prog-mat" style="width:0%"></div>
+        </div>
+      </button>
+
+      <button class="subject-card ingles slide-up delay-2"
+              data-emoji="🌎"
+              onclick="goToGame('ingles')"
+              aria-label="Ir a Inglés">
+        <div class="subject-icon">🌎</div>
+        <div>
+          <p class="subject-name">Inglés</p>
+          <p class="subject-desc">Palabras y vocabulario</p>
+        </div>
+        <div class="subject-progress">
+          <div class="subject-progress-fill" id="prog-ing" style="width:0%"></div>
+        </div>
+      </button>
+
+      <button class="subject-card lectura slide-up delay-3"
+              data-emoji="📖"
+              onclick="goToGame('lectura')"
+              aria-label="Ir a Lectura">
+        <div class="subject-icon">📖</div>
+        <div>
+          <p class="subject-name">Lectura</p>
+          <p class="subject-desc">Cuentos y comprensión</p>
+        </div>
+        <div class="subject-progress">
+          <div class="subject-progress-fill" id="prog-lec" style="width:0%"></div>
+        </div>
+      </button>
+
+      <button class="subject-card arte slide-up delay-4"
+              data-emoji="🎨"
+              onclick="goToGame('arte')"
+              aria-label="Ir a Arte y Música">
+        <div class="subject-icon">🎨</div>
+        <div>
+          <p class="subject-name">Arte y Música</p>
+          <p class="subject-desc">Crea y expresa</p>
+        </div>
+        <div class="subject-progress">
+          <div class="subject-progress-fill" id="prog-art" style="width:0%"></div>
+        </div>
+      </button>
+
+      <button class="subject-card deporte slide-up delay-5"
+              data-emoji="⚽"
+              onclick="goToGame('deporte')"
+              aria-label="Ir a Educación Física">
+        <div class="subject-icon">⚽</div>
+        <div>
+          <p class="subject-name">Educación Física</p>
+          <p class="subject-desc">Muévete y juega</p>
+        </div>
+        <div class="subject-progress">
+          <div class="subject-progress-fill" id="prog-dep" style="width:0%"></div>
+        </div>
+      </button>
+
+      <button class="subject-card tecnologia slide-up delay-5"
+              data-emoji="💻"
+              onclick="goToGame('tecnologia')"
+              aria-label="Ir a Tecnología">
+        <div class="subject-icon">💻</div>
+        <div>
+          <p class="subject-name">Tecnología</p>
+          <p class="subject-desc">Aprende lo digital</p>
+        </div>
+        <div class="subject-progress">
+          <div class="subject-progress-fill" id="prog-tec" style="width:0%"></div>
+        </div>
+      </button>
+
+    </div>
+
+    <!-- Mis Aulas -->
+    <p class="section-title">🏫 Mis aulas</p>
+    <div id="aulasSection" style="margin-bottom:28px">
+      <div id="aulasList" style="display:flex;flex-direction:column;gap:10px"></div>
+      <button id="btnJoinAula" onclick="document.getElementById('codigoModal').classList.add('open')"
+              style="width:100%;padding:12px;border-radius:var(--radius-lg);border:2px dashed var(--heladeria-soft);background:white;font-size:.88rem;font-weight:700;color:var(--heladeria-dark);cursor:pointer;margin-top:8px;transition:background .15s"
+              onmouseover="this.style.background='var(--heladeria-light)'" onmouseout="this.style.background='white'">
+        ➕ Unirme a un aula
+      </button>
+    </div>
+
+    <!-- Retos del día -->
+    <p class="section-title">🎯 Retos de hoy</p>
+    <div class="retos-list" id="retosList">
+      <!-- Se generan dinámicamente -->
+    </div>
+
+  </div><!-- /content -->
+
+  <!-- ——— NAV INFERIOR ——— -->
+  <nav class="bottom-nav" aria-label="Navegación principal">
+    <button class="nav-btn active" aria-label="Inicio">
+      <span class="nav-ico">🏠</span>
+      <span>Inicio</span>
+    </button>
+    <button class="nav-btn" onclick="window.location.href='creativo.html'" aria-label="Crear">
+      <span class="nav-ico">✏️</span>
+      <span>Crear</span>
+    </button>
+    <button class="nav-btn" onclick="openCodigoModal()" aria-label="Mi salón">
+      <span class="nav-ico">🏫</span>
+      <span>Mi salón</span>
+    </button>
+    <button class="nav-btn" onclick="document.getElementById('profileModal').classList.add('open')" aria-label="Mi perfil">
+      <span class="nav-ico">⭐</span>
+      <span>Perfil</span>
+    </button>
+  </nav>
+
+  <!-- ——— MODAL: Código de salón ——— -->
+  <div class="modal-overlay" id="codigoModal"
+       onclick="if(event.target===this) this.classList.remove('open')">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <p class="modal-title">🏫 Unirme a un salón</p>
+      <p class="modal-sub">Pídele el código a tu profe y escríbelo aquí.</p>
+
+      <input class="code-input" id="codigoInput"
+             type="text" maxlength="8"
+             placeholder="EJ: HELADO7"
+             oninput="this.value=this.value.toUpperCase()">
+      <span class="field-error" id="codigoError" style="display:block;min-height:16px"></span>
+
+      <button class="btn btn-primary btn-xl" style="margin-top:8px" id="btnCodigo" onclick="joinClass()">
+        ¡Unirme! →
+      </button>
+      <button class="btn btn-ghost" style="margin-top:8px;width:100%;color:var(--text-2)"
+              onclick="document.getElementById('codigoModal').classList.remove('open')">
+        Ahora no
+      </button>
+    </div>
+  </div>
+
+  <!-- ——— MODAL: Perfil ——— -->
+  <div class="modal-overlay" id="profileModal"
+       onclick="if(event.target===this) this.classList.remove('open')">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+
+      <div style="text-align:center;margin-bottom:20px">
+        <div style="font-size:4rem;margin-bottom:8px" id="profileEmoji">🐻</div>
+        <p style="font-family:var(--font-display);font-size:1.4rem;font-weight:800" id="profileName">Explorador</p>
+        <p style="font-size:.85rem;color:var(--text-2)" id="profileClass">Sin salón aún</p>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px">
+        <div style="background:var(--heladeria-light);border-radius:var(--radius-md);padding:14px;text-align:center">
+          <p style="font-family:var(--font-display);font-size:1.6rem;font-weight:800;color:var(--heladeria-dark)" id="profilePoints">0</p>
+          <p style="font-size:.75rem;color:var(--text-2)">Estrellas</p>
+        </div>
+        <div style="background:var(--cafe-light);border-radius:var(--radius-md);padding:14px;text-align:center">
+          <p style="font-family:var(--font-display);font-size:1.6rem;font-weight:800;color:var(--cafe-dark)" id="profileActivities">0</p>
+          <p style="font-size:.75rem;color:var(--text-2)">Actividades</p>
+        </div>
+      </div>
+
+      <button class="btn btn-outline" style="margin-bottom:10px"
+              onclick="openCodigoModal()">
+        🏫 Unirme a un salón
+      </button>
+      <button class="btn btn-outline" style="color:var(--error);border-color:var(--error)"
+              onclick="logout()">
+        Cerrar sesión
+      </button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase.js"></script>
+  <script>
+
+    /* ============ ESTADO ============ */
+    let kid = null;
+    let actividades = 0;
+
+    const PROG_MAP = {
+      matematica: 'prog-mat',
+      ingles:     'prog-ing',
+      lectura:    'prog-lec',
+      arte:       'prog-art',
+      deporte:    'prog-dep',
+      tecnologia: 'prog-tec',
+    };
+
+    // Retos diarios (se pueden cargar desde Supabase en el futuro)
+    const RETOS_DIARIOS = [
+      { emoji:'🔢', nombre:'Suma rápida',     desc:'5 preguntas de sumas',   pts:20, modulo:'matematica' },
+      { emoji:'🌎', nombre:'Animal en inglés', desc:'Aprende 5 palabras nuevas', pts:15, modulo:'ingles' },
+      { emoji:'📖', nombre:'Mini cuento',      desc:'Lee y responde 3 preguntas', pts:25, modulo:'lectura' },
+    ];
+
+    /* ============ INICIALIZAR ============ */
+    async function init() {
+      kid = getKidSession();
+      if (!kid) { window.location.href = '../index.html'; return; }
+
+      // Aplicar datos del perfil en UI
+      document.getElementById('greeting').textContent  = `¡Hola, ${kid.nickname}! 👋`;
+      document.getElementById('avatarBtn').textContent  = kid.avatar_emoji || '🐻';
+      document.getElementById('profileEmoji').textContent = kid.avatar_emoji || '🐻';
+      document.getElementById('profileName').textContent  = kid.nickname;
+      document.getElementById('profilePoints').textContent = kid.points || 0;
+
+      // Animar barra de puntos (max 500 pts por nivel)
+      const pct = Math.min(((kid.points || 0) / 500) * 100, 100);
+      setTimeout(() => {
+        document.getElementById('pointsBar').style.width = pct + '%';
+        document.getElementById('pointsVal').textContent  = kid.points || 0;
+      }, 400);
+
+      // Cargar progreso por módulo desde Supabase
+      await loadProgress();
+
+      // Cargar retos del día
+      renderRetos();
+
+      // Verificar si tiene salón
+      await loadClassInfo();
+
+      hideLoader();
+    }
+
+    /* ============ CARGAR PROGRESO ============ */
+    async function loadProgress() {
+      const { data } = await sb
+        .from('activity_log')
+        .select('module, score')
+        .eq('student_id', kid.id);
+
+      if (!data) return;
+
+      actividades = data.length;
+      document.getElementById('profileActivities').textContent = actividades;
+
+      // Agrupar por módulo
+      const totals = {};
+      data.forEach(r => {
+        totals[r.module] = (totals[r.module] || 0) + r.score;
+      });
+
+      // Mostrar barras de progreso (máx referencial: 200 pts por materia)
+      Object.entries(PROG_MAP).forEach(([mod, barId]) => {
+        const pts = totals[mod] || 0;
+        const pct = Math.min((pts / 200) * 100, 100);
+        setTimeout(() => {
+          document.getElementById(barId).style.width = pct + '%';
+        }, 600);
+      });
+    }
+
+    /* ============ CARGAR SALÓN ============ */
+    async function loadClassInfo() {
+      if (!kid.class_code) return;
+
+      const { data } = await sb
+        .from('classes')
+        .select('name')
+        .eq('code', kid.class_code)
+        .maybeSingle();
+
+      if (data) {
+        document.getElementById('profileClass').textContent = `Salón: ${data.name}`;
+      }
+    }
+
+    /* ============ RETOS DEL DÍA ============ */
+    function renderRetos() {
+      const list = document.getElementById('retosList');
+      RETOS_DIARIOS.forEach(r => {
+        const div = document.createElement('button');
+        div.className = 'reto-card slide-up';
+        div.innerHTML = `
+          <div class="reto-badge">${r.emoji}</div>
+          <div class="reto-info">
+            <p class="reto-name">${r.nombre}</p>
+            <p class="reto-meta">${r.desc}</p>
+          </div>
+          <span class="reto-pts">+${r.pts}⭐</span>
+        `;
+        div.onclick = () => goToGame(r.modulo);
+        list.appendChild(div);
+      });
+    }
+
+    /* ============ NAVEGACIÓN A JUEGOS ============ */
+    function goToGame(modulo) {
+      // Próximamente: páginas de juego por módulo
+      const rutas = {
+        matematica: 'juego-matematica.html',
+        ingles:     'juego-ingles.html',
+        lectura:    'juego-lectura.html',
+        arte:       'creativo.html',
+        deporte:    'juego-deporte.html',
+        tecnologia: 'juego-tecnologia.html',
+      };
+      const ruta = rutas[modulo];
+      if (ruta) {
+        window.location.href = ruta;
+      } else {
+        showToast('¡Próximamente disponible! 🚀', 'info');
+      }
+    }
+
+    /* ============ UNIRSE A SALÓN ============ */
+    function openCodigoModal() {
+      document.getElementById('profileModal').classList.remove('open');
+      document.getElementById('codigoModal').classList.add('open');
+    }
+
+    async function joinClass() {
+      const code = document.getElementById('codigoInput').value.trim().toUpperCase();
+      if (!code) { showToast('Escribe el código de tu salón','error'); return; }
+
+      const btn = document.getElementById('btnCodigo');
+      setButtonLoading(btn, true);
+
+      // Buscar el salón
+      const { data: cls } = await sb
+        .from('classes')
+        .select('id, name')
+        .eq('code', code)
+        .maybeSingle();
+
+      if (!cls) {
+        document.getElementById('codigoError').textContent = 'No encontré ese código. Revísalo con tu profe.';
+        document.getElementById('codigoError').style.color = 'var(--error)';
+        setButtonLoading(btn, false);
+        return;
+      }
+
+      // Registrar relación en class_students
+      await sb.from('class_students').upsert({
+        class_id:   cls.id,
+        student_id: kid.id,
+      });
+
+      // Actualizar estudiante con el code
+      await sb.from('students').update({ class_code: code }).eq('id', kid.id);
+
+      // Actualizar sesión local
+      kid.class_code = code;
+      saveKidSession(kid);
+
+      document.getElementById('profileClass').textContent = `Salón: ${cls.name}`;
+      document.getElementById('codigoModal').classList.remove('open');
+      showToast(`¡Te uniste al salón ${cls.name}! 🎉`, 'success');
+      setButtonLoading(btn, false);
+    }
+
+    /* ============ CERRAR SESIÓN ============ */
+    function logout() {
+      clearKidSession();
+      window.location.href = '../index.html';
+    }
+
+    /* ============ AULAS DEL ALUMNO ============ */
+    async function loadAulas() {
+      const k = getKidSession();
+      if (!k) return;
+      const list = document.getElementById('aulasList');
+      const { data } = await sb
+        .from('classroom_students')
+        .select('classrooms(id, name, subject, color, code)')
+        .eq('student_id', k.id);
+      if (!data || data.length === 0) {
+        list.innerHTML = '<p style="font-size:.82rem;color:var(--text-3);text-align:center;padding:8px 0">Aún no estás en ningún aula. Usa el código de tu profesor para unirte.</p>';
+        return;
+      }
+      list.innerHTML = '';
+      data.forEach(row => {
+        const cls = row.classrooms;
+        if (!cls) return;
+        const card = document.createElement('button');
+        card.style.cssText = `width:100%;padding:14px 16px;border-radius:16px;border:2px solid ${cls.color}55;background:linear-gradient(135deg,${cls.color}15,${cls.color}25);display:flex;align-items:center;gap:12px;cursor:pointer;text-align:left;transition:transform .15s,box-shadow .15s`;
+        card.onmouseover = () => { card.style.transform='translateY(-2px)'; card.style.boxShadow='0 4px 12px rgba(0,0,0,.1)'; };
+        card.onmouseout  = () => { card.style.transform=''; card.style.boxShadow=''; };
+        card.innerHTML = `
+          <div style="width:42px;height:42px;border-radius:12px;background:${cls.color};display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0">🏫</div>
+          <div style="flex:1">
+            <p style="font-family:'Baloo 2',cursive;font-size:.95rem;font-weight:800;color:var(--text)">${esc(cls.name)}</p>
+            <p style="font-size:.75rem;color:var(--text-2);margin-top:2px">${esc(cls.subject||'General')}</p>
+          </div>
+          <span style="font-size:1rem;color:var(--text-3)">→</span>`;
+        card.onclick = () => window.location.href = `aula-alumno.html?id=${cls.id}`;
+        list.appendChild(card);
+      });
+    }
+
+    function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    /* ============ ARRANQUE ============ */
+    init();
+    loadAulas();
+  </script>
+</body>
+</html>

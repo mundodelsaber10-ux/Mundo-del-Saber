@@ -6,8 +6,8 @@
    ============================================ */
 
 // ⚠️ CAMBIA ESTOS DOS VALORES con los tuyos de supabase.com → Project Settings → API
-const SUPABASE_URL      = 'https://TU_PROYECTO.supabase.co';
-const SUPABASE_ANON_KEY = 'TU_ANON_KEY_AQUI';
+const SUPABASE_URL      = 'https://ikrxhfxbwjsklezxzrtt.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlrcnhoZnhid2pza2xlenh6cnR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMzQ3MjAsImV4cCI6MjA5MjcxMDcyMH0._yhufHn5_oTLIIO5e6vkay94f1RVMRj9JY5TMuYodHk';
 
 // Inicializa el cliente de Supabase (cargado via CDN en cada HTML)
 const { createClient } = supabase;
